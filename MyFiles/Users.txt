@@ -1,0 +1,3 @@
+uid,upassword,uname,ugender,uemail,uphone,urole
+C000001,123,Carl,MALE,123@gmail.com,111222333,CUSTOMER
+A000004,1236,Mary,FEMALE,1236@gmail.com,111222333,ADMIN
