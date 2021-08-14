@@ -55,7 +55,7 @@ public class UserFile extends MyFile {
                 break;
             }
         }
-
+        f.close();
         return allUsers;
     }
 
@@ -91,6 +91,7 @@ public class UserFile extends MyFile {
         try (PrintWriter f = new PrintWriter(fw)) {
             f.println(String.format("%s,%s,%s,%s,%s,%s,%s", id, password, name, gender, email, phone, role));
         }
+        fw.close();
     }
 
     private static String getUID(String role) throws IOException, RecordNotFoundException {
