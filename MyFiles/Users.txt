@@ -1,3 +1,5 @@
-uid,upassword,uname,ugender,uemail,uphone,urole
-C000001,123,Carl,MALE,123@gmail.com,111222333,CUSTOMER
-A000004,1236,Mary,FEMALE,1236@gmail.com,111222333,ADMIN
+uid,upassword,uname,ugender,uemail,uphone,urole,ustatus
+C000001,123,Carl,MALE,123@gmail.com,111222333,CUSTOMER,ACTIVE
+A000002,1234,Bob,MALE,1234@gmail.com,111222333,ADMIN,ACTIVE
+C000003,1235,Jane,FEMALE,1235@gmail.com,111222333,CUSTOMER,ACTIVE
+A000004,1236,Mary,FEMALE,1236@gmail.com,111222333,ADMIN,ACTIVE

@@ -1,3 +1,6 @@
+package FileIO;
+
+import javax.management.relation.Role;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
@@ -7,8 +10,8 @@ import java.util.Scanner;
  * @author mkcarl
  */
 public class UserFile extends MyFile {
-    private static final String fileName = "Users.txt", fileDir = directory+fileName;
-    private static final String[] columns = {"uid", "upassword","uname", "ugender", "uemail", "uphone", "urole"};
+    private static final String fileName = "Users.txt", fileDir = MyFile.directory+fileName;
+    private static final String[] columns = {"uid", "upassword","uname", "ugender", "uemail", "uphone", "urole", "ustatus"};
 
 
     public static void createUserFile() throws IOException {
@@ -25,9 +28,9 @@ public class UserFile extends MyFile {
         f.close();
     }
 
-    public static void addNewUser(String password, String name, String gender, String email, String phone, String role){
+    public static void addNewUser(String password, String name, String gender, String email, String phone, String role, String ustatus){
         try {
-            newEntry(getUID(role), password, name, gender, email, phone, role);
+            newEntry(getUID(role), password, name, gender, email, phone, role, ustatus);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -40,7 +43,7 @@ public class UserFile extends MyFile {
         Scanner f = new Scanner(file);
         ArrayList<ArrayList<String>> allUsers = new ArrayList<>();
 
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < 8; i++) {
             allUsers.add(new ArrayList<>());
         }
         f.nextLine();
@@ -59,7 +62,7 @@ public class UserFile extends MyFile {
         return allUsers;
     }
 
-    public static ArrayList<String> readColumn(String columnName) throws IOException, RecordNotFoundException{
+    public static ArrayList<String> readColumn(String columnName) throws IOException, RecordNotFoundException {
         ArrayList<ArrayList<String>> allUsers = readAllUsers();
         switch (columnName){
             case "uid":
@@ -76,6 +79,8 @@ public class UserFile extends MyFile {
                 return allUsers.get(5);
             case "urole":
                 return allUsers.get(6);
+            case "ustatus":
+                return allUsers.get(6);
             default:
                 throw new RecordNotFoundException("No such column.");
         }
@@ -86,16 +91,16 @@ public class UserFile extends MyFile {
         return allUsers.get(columnIndex);
     }
 
-    private static void newEntry(String id, String password,String name, String gender, String email, String phone, String role) throws IOException {
+    private static void newEntry(String id, String password,String name, String gender, String email, String phone, String role, String ustatus) throws IOException {
         FileWriter fw = new FileWriter(fileDir, true);
         try (PrintWriter f = new PrintWriter(fw)) {
-            f.println(String.format("%s,%s,%s,%s,%s,%s,%s", id, password, name, gender, email, phone, role));
+            f.println(String.format("%s,%s,%s,%s,%s,%s,%s,%s", id, password, name, gender, email, phone, role, ustatus));
         }
         fw.close();
     }
 
     private static String getUID(String role) throws IOException, RecordNotFoundException {
-        ArrayList<String> allID = readColumn("id");
+        ArrayList<String> allID = readColumn("uid");
         int intID;
         if (allID.size() != 0) {
             String lastID = allID.get(allID.size() - 1);
@@ -104,7 +109,7 @@ public class UserFile extends MyFile {
             intID = 0;
         }
         intID++;
-        if (role.equals(Role.CUSTOMER.name())){
+        if (role.equals("CUSTOMER")){
             return String.format("C%06d",intID);
         } else {
             return String.format("A%06d",intID);
@@ -172,6 +177,15 @@ public class UserFile extends MyFile {
             throw new RecordNotFoundException("No such record exist");
         }
         return target;
+    }
+
+    public static boolean userExist(String uid) throws RecordNotFoundException, IOException {
+        ArrayList<String> allUsers = readColumn("uid");
+        if (allUsers.contains(uid)){
+            return true;
+        } else {
+            throw new RecordNotFoundException(String.format("The UID %s does not exist in %s", uid, fileName));
+        }
     }
 }
 
