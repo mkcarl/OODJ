@@ -9,7 +9,10 @@ public abstract class MyFile {
 
     protected static String directory = "./MyFiles/";
 
-    public static void createDirectory(){
+    /**
+     * Create the base directory to store all files.
+     */
+    protected static void createDirectory(){
         File dir = new File(directory);
 
         if (dir.mkdir()){

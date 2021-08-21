@@ -14,6 +14,9 @@ public class UserFile extends MyFile {
     private static final String[] columns = {"uid", "upassword","uname", "ugender", "uemail", "uphone", "urole", "ustatus"};
 
 
+    /**
+     * Creates Users.txt file
+     */
     public static void createUserFile() throws IOException {
         File file;
 
@@ -28,9 +31,18 @@ public class UserFile extends MyFile {
         f.close();
     }
 
-    public static void addNewUser(String password, String name, String gender, String email, String phone, String role, String ustatus){
+    /**
+     * @param upassword User password
+     * @param uname User name
+     * @param ugender User gender
+     * @param uemail User email
+     * @param uphone User phone number
+     * @param urole User role (admin or customer)
+     * @param ustatus User status (active or inactive)
+     */
+    public static void addNewUser(String upassword, String uname, String ugender, String uemail, String uphone, String urole, String ustatus){
         try {
-            newEntry(getUID(role), password, name, gender, email, phone, role, ustatus);
+            newEntry(getUID(urole), upassword, uname, ugender, uemail, uphone, urole, ustatus);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -38,6 +50,9 @@ public class UserFile extends MyFile {
         }
     }
 
+    /**
+     * @return All Users from Users.txt in a 2D ArrayList. Each Arraylist is a column of Users.
+     */
     public static ArrayList<ArrayList<String>> readAllUsers() throws FileNotFoundException {
         File file = new File(fileDir);
         Scanner f = new Scanner(file);
@@ -62,6 +77,10 @@ public class UserFile extends MyFile {
         return allUsers;
     }
 
+    /**
+     * @param columnName Column name : uid, upassword, uname, ugender, uemail, uphone, urole, ustatus
+     * @return ArrayList of the specified column.
+     */
     public static ArrayList<String> readColumn(String columnName) throws IOException, RecordNotFoundException {
         ArrayList<ArrayList<String>> allUsers = readAllUsers();
         switch (columnName){
@@ -80,25 +99,43 @@ public class UserFile extends MyFile {
             case "urole":
                 return allUsers.get(6);
             case "ustatus":
-                return allUsers.get(6);
+                return allUsers.get(7);
             default:
                 throw new RecordNotFoundException("No such column.");
         }
     }
 
+    /**
+     * @param columnIndex Index of column. Range 1 to 7
+     * @return ArrayList of the spedified column.
+     */
     public static ArrayList<String> readColumn(int columnIndex) throws IOException{
         ArrayList<ArrayList<String>> allUsers = readAllUsers();
         return allUsers.get(columnIndex);
     }
 
-    private static void newEntry(String id, String password,String name, String gender, String email, String phone, String role, String ustatus) throws IOException {
+    /**
+     * @param uid User ID
+     * @param upassword User password
+     * @param uname User name
+     * @param ugender User gender
+     * @param uemail User email
+     * @param uphone User phone number
+     * @param urole User role
+     * @param ustatus User status
+     */
+    private static void newEntry(String uid, String upassword,String uname, String ugender, String uemail, String uphone, String urole, String ustatus) throws IOException {
         FileWriter fw = new FileWriter(fileDir, true);
         try (PrintWriter f = new PrintWriter(fw)) {
-            f.println(String.format("%s,%s,%s,%s,%s,%s,%s,%s", id, password, name, gender, email, phone, role, ustatus));
+            f.println(String.format("%s,%s,%s,%s,%s,%s,%s,%s", uid, upassword, uname, ugender, uemail, uphone, urole, ustatus));
         }
         fw.close();
     }
 
+    /**
+     * @param role Role of user
+     * @return Auto generated UID based on role and last User ID in Users. txt
+     */
     private static String getUID(String role) throws IOException, RecordNotFoundException {
         ArrayList<String> allID = readColumn("uid");
         int intID;
@@ -116,6 +153,11 @@ public class UserFile extends MyFile {
         }
     }
 
+    /**
+     * @param columnIndex Index of column
+     * @param entryIndex Index of row
+     * @param newValue Value to replace with
+     */
     public static void updateEntry(int columnIndex, int entryIndex, String newValue) throws IOException, IndexOutOfBoundsException {
         ArrayList<ArrayList<String>> allUsers = readAllUsers();
         ArrayList<String> targetColumn = readColumn(columnIndex);
@@ -141,6 +183,9 @@ public class UserFile extends MyFile {
         }
     }
 
+    /**
+     * @param entryIndex Index of row to delete.
+     */
     public static void deleteEntry(int entryIndex) throws IOException{
         ArrayList<ArrayList<String>> allUsers = readAllUsers();
         int row = allUsers.get(0).size();
@@ -164,11 +209,15 @@ public class UserFile extends MyFile {
         }
     }
 
-    public static int indexOf(String id) throws IOException, RecordNotFoundException {
+    /**
+     * @param uid User ID
+     * @return Index of the specified User ID.
+     */
+    public static int indexOf(String uid) throws IOException, RecordNotFoundException {
         ArrayList<String> uidColumn = readColumn(0);
         int target = -1;
         for (int i = 0; i < uidColumn.size(); i++) {
-            if (id.equals(uidColumn.get(i))){
+            if (uid.equals(uidColumn.get(i))){
                 target = i;
                 break;
             }
@@ -179,6 +228,10 @@ public class UserFile extends MyFile {
         return target;
     }
 
+    /**
+     * @param uid User ID
+     * @return True if the specified User ID exist in Orders.txt
+     */
     public static boolean userExist(String uid) throws RecordNotFoundException, IOException {
         ArrayList<String> allUsers = readColumn("uid");
         if (allUsers.contains(uid)){

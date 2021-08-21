@@ -12,6 +12,9 @@ public class ProductFile extends MyFile {
     private static final String fileName = "Products.txt", fileDir = MyFile.directory + fileName;
     private static final String[] columns = {"pid", "pname", "ptype", "punitprice", "ppackagingcharge", "pinventorycount", "pstatus"};
 
+    /**
+     * Creates Products.txt
+     */
     public static void createProductFile() throws IOException {
         File file;
 
@@ -26,6 +29,14 @@ public class ProductFile extends MyFile {
         f.close();
     }
 
+    /**
+     * @param name Product name
+     * @param type Product type (fragile or non-fragile)
+     * @param unitPrice Product Unit Price
+     * @param packagingCharge Product Packaging Charge
+     * @param inventoryCount Product Inventory count
+     * @param status Product status (active or inactive)
+     */
     public static void addNewProduct(String name, String type, double unitPrice, double packagingCharge, int inventoryCount, String status) {
         try {
             newEntry(getPID(), name, type, unitPrice, packagingCharge, inventoryCount, status);
@@ -36,6 +47,9 @@ public class ProductFile extends MyFile {
         }
     }
 
+    /**
+     * @return All Products from Products.txt in a 2D ArrayList. Each ArrayList is a column of Products.
+     */
     public static ArrayList<ArrayList<String>> readAllProducts() throws FileNotFoundException {
         File file = new File(fileDir);
         Scanner f = new Scanner(file);
@@ -60,6 +74,10 @@ public class ProductFile extends MyFile {
         return allProducts;
     }
 
+    /**
+     * @param columnName Column name : pid, pname, ptype, punitprice, ppackagingprice, pinventorycount, pstatus
+     * @return Arraylist of specified column.
+     */
     public static ArrayList<String> readColumn(String columnName) throws IOException, RecordNotFoundException {
         ArrayList<ArrayList<String>> allProducts = readAllProducts();
         switch (columnName) {
@@ -82,12 +100,25 @@ public class ProductFile extends MyFile {
         }
     }
 
+    /**
+     * @param columnIndex Index of column. Range 1 to 6
+     * @return ArrayList of the specified column.
+     */
     public static ArrayList<String> readColumn(int columnIndex) throws IOException {
         ArrayList<ArrayList<String>> allProducts = readAllProducts();
         return allProducts.get(columnIndex);
     }
 
 
+    /**
+     * @param id Prouct ID
+     * @param name Product name
+     * @param type Product type (fragile or non-fragile)
+     * @param unitPrice Product unit price
+     * @param packagingCharge Product packaging charge
+     * @param inventoryCount Product inventory count
+     * @param status Product status (active or inactive)
+     */
     private static void newEntry(String id, String name, String type, double unitPrice, double packagingCharge,
                                  int inventoryCount, String status) throws IOException {
         FileWriter fw = new FileWriter(fileDir, true);
@@ -97,6 +128,9 @@ public class ProductFile extends MyFile {
         fw.close();
     }
 
+    /**
+     * @return Auto generated PID based on the last Product ID in Products. txt
+     */
     private static String getPID() throws IOException, RecordNotFoundException {
         ArrayList<String> allID = readColumn("pid");
         int intID;
@@ -110,6 +144,11 @@ public class ProductFile extends MyFile {
         return String.format("P%06d", intID);
     }
 
+    /**
+     * @param columnIndex Index of column
+     * @param entryIndex Index of row
+     * @param newValue Value to replace with
+     */
     public static void updateEntry(int columnIndex, int entryIndex, String newValue) throws IOException, IndexOutOfBoundsException {
         ArrayList<ArrayList<String>> allProducts = readAllProducts();
         ArrayList<String> targetColumn = readColumn(columnIndex);
@@ -135,6 +174,9 @@ public class ProductFile extends MyFile {
         }
     }
 
+    /**
+     * @param entryIndex Index of row to delete.
+     */
     public static void deleteEntry(int entryIndex) throws IOException, IndexOutOfBoundsException {
         ArrayList<ArrayList<String>> allProducts = readAllProducts();
         int row = allProducts.get(0).size();
@@ -162,11 +204,15 @@ public class ProductFile extends MyFile {
         }
     }
 
-    public static int indexOf(String id) throws IOException, RecordNotFoundException {
+    /**
+     * @param pid Product ID
+     * @return Index of the specified Product ID.
+     */
+    public static int indexOf(String pid) throws IOException, RecordNotFoundException {
         ArrayList<String> pidColumn = readColumn(0);
         int target = -1;
         for (int i = 0; i < pidColumn.size(); i++) {
-            if (id.equals(pidColumn.get(i))) {
+            if (pid.equals(pidColumn.get(i))) {
                 target = i;
                 break;
             }
@@ -177,6 +223,10 @@ public class ProductFile extends MyFile {
         return target;
     }
 
+    /**
+     * @param pid Product ID
+     * @return True if the specified Product ID exist in Products.txt
+     */
     public static boolean productExist(String pid) throws RecordNotFoundException, IOException {
         ArrayList<String> allProducts = readColumn("pid");
         if (allProducts.contains(pid)){

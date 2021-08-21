@@ -67,7 +67,7 @@ public class Test {
 
     public static void createDummyOrderItem(){
         try {
-            OrderProductFile.createOrderFile();
+            OrderProductFile.createOrderProductFile();
         } catch (IOException e) {
             e.printStackTrace();
         }

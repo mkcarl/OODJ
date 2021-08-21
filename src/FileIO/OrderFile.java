@@ -15,6 +15,9 @@ public class OrderFile extends MyFile {
     private static final String[] columns = {"oid", "odate", "ostatus", "uid"};
 
 
+    /**
+     * Creates Orders.txt
+     */
     public static void createOrderFile() throws IOException {
         File file;
 
@@ -29,6 +32,11 @@ public class OrderFile extends MyFile {
         f.close();
     }
 
+    /**
+     * @param odate Order date
+     * @param ostatus Order Status
+     * @param uid User ID
+     */
     public static void addNewOrder(Date odate, String ostatus, String uid) {
         try {
             if (UserFile.userExist(uid)) {
@@ -40,6 +48,9 @@ public class OrderFile extends MyFile {
         }
     }
 
+    /**
+     * @return All Orders from Orders.txt in a 2D ArrayList. Each ArrayList is a column of Orders.
+     */
     public static ArrayList<ArrayList<String>> readAllOrders() throws FileNotFoundException {
         File file = new File(fileDir);
         Scanner f = new Scanner(file);
@@ -64,6 +75,10 @@ public class OrderFile extends MyFile {
         return allUsers;
     }
 
+    /**
+     * @param columnName Column name : oid, odate, ostatus, uid
+     * @return ArrayList of the specified column
+     */
     public static ArrayList<String> readColumn(String columnName) throws IOException, RecordNotFoundException {
         ArrayList<ArrayList<String>> allUsers = readAllOrders();
         switch (columnName) {
@@ -80,11 +95,21 @@ public class OrderFile extends MyFile {
         }
     }
 
+    /**
+     * @param columnIndex Index of column. Range 0 to 3.
+     * @return ArrayList of the specified column.
+     */
     public static ArrayList<String> readColumn(int columnIndex) throws IOException {
         ArrayList<ArrayList<String>> allUsers = readAllOrders();
         return allUsers.get(columnIndex);
     }
 
+    /**
+     * @param oid Order ID.
+     * @param odate Order Date.
+     * @param ostatus Order Status.
+     * @param uid User ID.
+     */
     private static void newEntry(String oid, Date odate, String ostatus, String uid) throws IOException {
         FileWriter fw = new FileWriter(fileDir, true);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -94,6 +119,9 @@ public class OrderFile extends MyFile {
         fw.close();
     }
 
+    /**
+     * @return Auto generated Order ID based on the last Order ID in Orders.txt
+     */
     private static String getOID() throws IOException, RecordNotFoundException {
         ArrayList<String> allID = readColumn("oid");
         int intID;
@@ -107,6 +135,11 @@ public class OrderFile extends MyFile {
         return String.format("O%06d", intID);
     }
 
+    /**
+     * @param columnIndex Index of column
+     * @param entryIndex Index of row
+     * @param newValue Value to replace with
+     */
     public static void updateEntry(int columnIndex, int entryIndex, String newValue) throws IOException, IndexOutOfBoundsException {
         ArrayList<ArrayList<String>> allOrders = readAllOrders();
         ArrayList<String> targetColumn = readColumn(columnIndex);
@@ -132,6 +165,9 @@ public class OrderFile extends MyFile {
         }
     }
 
+    /**
+     * @param entryIndex Index of row to delete.
+     */
     public static void deleteEntry(int entryIndex) throws IOException {
         ArrayList<ArrayList<String>> allOrders = readAllOrders();
         int row = allOrders.get(0).size();
@@ -155,11 +191,15 @@ public class OrderFile extends MyFile {
         }
     }
 
-    public static int indexOf(String id) throws IOException, RecordNotFoundException {
+    /**
+     * @param oid Order ID.
+     * @return Index of the specified Order ID.
+     */
+    public static int indexOf(String oid) throws IOException, RecordNotFoundException {
         ArrayList<String> oidColumn = readColumn(0);
         int target = -1;
         for (int i = 0; i < oidColumn.size(); i++) {
-            if (id.equals(oidColumn.get(i))) {
+            if (oid.equals(oidColumn.get(i))) {
                 target = i;
                 break;
             }
@@ -170,6 +210,10 @@ public class OrderFile extends MyFile {
         return target;
     }
 
+    /**
+     * @param oid Order ID.
+     * @return True if the specified Order ID exist in Orders.txt
+     */
     public static boolean orderExist(String oid) throws RecordNotFoundException, IOException {
         ArrayList<String> allOrders = readColumn("oid");
         if (allOrders.contains(oid)){

@@ -13,7 +13,10 @@ public class OrderProductFile extends MyFile {
     private static final String[] columns = {"oid", "pid", "qty"};
 
 
-    public static void createOrderFile() throws IOException {
+    /**
+     * Creates OrdersProducts.txt file.
+     */
+    public static void createOrderProductFile() throws IOException {
         File file;
 
         MyFile.createDirectory();
@@ -27,6 +30,13 @@ public class OrderProductFile extends MyFile {
         f.close();
     }
 
+    /**
+     * Order ID and Product ID must already exist in Orders.txt and Products.txt
+     * @param oid Order ID
+     * @param pid Product ID
+     * @param qty Quantity
+     *
+     */
     public static void addNewOrderProduct(String oid, String pid, int qty){
         try {
             if (ProductFile.productExist(pid) && OrderFile.orderExist(oid)) {
@@ -38,6 +48,9 @@ public class OrderProductFile extends MyFile {
         }
     }
 
+    /**
+     * @return All OrderProduct from OrdersProducts.txt in a 2D ArrayList. Each ArrayList is a column of OrdersProducts.
+     */
     public static ArrayList<ArrayList<String>> readAllOrdersProducts() throws FileNotFoundException {
         File file = new File(fileDir);
         Scanner f = new Scanner(file);
@@ -62,6 +75,10 @@ public class OrderProductFile extends MyFile {
         return allOrdersProducts;
     }
 
+    /**
+     * @param columnName Column name : oid, pid, qty
+     * @return ArrayList of the specified column
+     */
     public static ArrayList<String> readColumn(String columnName) throws IOException, RecordNotFoundException {
         ArrayList<ArrayList<String>> allOrdersProducts = readAllOrdersProducts();
         switch (columnName){
@@ -76,11 +93,21 @@ public class OrderProductFile extends MyFile {
         }
     }
 
+    /**
+     * @param columnIndex Index of column. Range 0 to 2.
+     * @return ArrayList of the specified column
+     */
     public static ArrayList<String> readColumn(int columnIndex) throws IOException{
         ArrayList<ArrayList<String>> allUsers = readAllOrdersProducts();
         return allUsers.get(columnIndex);
     }
 
+    /**
+     * Order ID and Product ID must already exist in Orders.txt and Products.txt
+     * @param oid Order ID
+     * @param pid Product ID
+     * @param qty Quantity
+     */
     private static void newEntry(String oid, String pid, int qty) throws IOException {
         FileWriter fw = new FileWriter(fileDir, true);
         try (PrintWriter f = new PrintWriter(fw)) {
@@ -89,6 +116,10 @@ public class OrderProductFile extends MyFile {
         fw.close();
     }
 
+    /**
+     * @param oid Order ID
+     * @return Product IDs of the specified Order ID.
+     */
     private static ArrayList<String> getPIDs(String oid) throws IOException, RecordNotFoundException {
         ArrayList<String> allPID = readColumn("pid");
         ArrayList<String> targetPIDs = new ArrayList<>();
@@ -106,6 +137,11 @@ public class OrderProductFile extends MyFile {
 
     }
 
+    /**
+     * @param columnIndex Index of column
+     * @param entryIndex Index of row
+     * @param newValue Value to replace with
+     */
     public static void updateEntry(int columnIndex, int entryIndex, String newValue) throws IOException, IndexOutOfBoundsException {
         ArrayList<ArrayList<String>> allOrdersProducts = readAllOrdersProducts();
         ArrayList<String> targetColumn = readColumn(columnIndex);
@@ -119,7 +155,7 @@ public class OrderProductFile extends MyFile {
             throw new IndexOutOfBoundsException("entryIndex out of bound");
         }
 
-        createOrderFile();
+        createOrderProductFile();
         for (int i = 0; i < row; i++) {
             ArrayList<String> temp = new ArrayList<>();
             for (int j = 0; j < col; j++) {
@@ -131,6 +167,9 @@ public class OrderProductFile extends MyFile {
         }
     }
 
+    /**
+     * @param entryIndex Index of row to delete
+     */
     public static void deleteEntry(int entryIndex) throws IOException{
         ArrayList<ArrayList<String>> allOrdersProducts = readAllOrdersProducts();
         int row = allOrdersProducts.get(0).size();
@@ -142,7 +181,7 @@ public class OrderProductFile extends MyFile {
         }
 
         row--;
-        createOrderFile();
+        createOrderProductFile();
         for (int i = 0; i < row; i++) {
             ArrayList<String> temp = new ArrayList<>();
             for (int j = 0; j < col; j++) {
@@ -154,6 +193,10 @@ public class OrderProductFile extends MyFile {
         }
     }
 
+    /**
+     * @param oid Order ID
+     * @return ArrayList of Integer which corresponds to the specified OrderID
+     */
     public static ArrayList<Integer> indicesOf(String oid) throws IOException, RecordNotFoundException {
         ArrayList<String> allOID = readColumn("oid");
         ArrayList<Integer> targetIndices = new ArrayList<>();
