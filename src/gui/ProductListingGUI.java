@@ -2,7 +2,7 @@ package gui;
 
 import javax.swing.*;
 
-public class productListing {
+public class ProductListingGUI {
     private JTextField txtSearch;
     private JButton btnCart;
     private JButton btnGo;

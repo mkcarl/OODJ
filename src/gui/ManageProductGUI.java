@@ -2,7 +2,7 @@ package gui;
 
 import javax.swing.*;
 
-public class manageProduct {
+public class ManageProductGUI {
     private JLabel lblManageProduct;
     private JLabel lblSearch;
     private JTextField txtSearch;

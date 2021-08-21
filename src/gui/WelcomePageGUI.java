@@ -2,7 +2,7 @@ package gui;
 
 import javax.swing.*;
 
-public class welcomePage {
+public class WelcomePageGUI {
     private JLabel lblWelcome;
     private JButton btnCustomer;
     private JButton btnProduct;

@@ -2,7 +2,7 @@ package gui;
 
 import javax.swing.*;
 
-public class customer {
+public class CustomerGUI {
     private JLabel lblCustomer;
     private JTextField textField1;
     private JButton btnGo;
