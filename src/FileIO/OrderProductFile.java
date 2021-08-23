@@ -120,7 +120,7 @@ public class OrderProductFile extends MyFile {
      * @param oid Order ID
      * @return Product IDs of the specified Order ID.
      */
-    private static ArrayList<String> getPIDs(String oid) throws IOException, RecordNotFoundException {
+    public static ArrayList<String> getPIDs(String oid) throws IOException, RecordNotFoundException {
         ArrayList<String> allPID = readColumn("pid");
         ArrayList<String> targetPIDs = new ArrayList<>();
 

@@ -112,7 +112,7 @@ public class OrderFile extends MyFile {
      */
     private static void newEntry(String oid, Date odate, String ostatus, String uid) throws IOException {
         FileWriter fw = new FileWriter(fileDir, true);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try (PrintWriter f = new PrintWriter(fw)) {
             f.println(String.format("%s,%s,%s,%s", oid, sdf.format(odate), ostatus, uid));
         }

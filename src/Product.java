@@ -32,6 +32,25 @@ public class Product {
         }
     }
 
+    public Product(String pid){
+        try {
+            ArrayList<ArrayList<String>> allProductFromFile = ProductFile.readAllProducts();
+            int entryNumber = allProductFromFile.get(0).indexOf(pid);
+
+            this.product_id = allProductFromFile.get(1).get(entryNumber);
+            this.product_name = allProductFromFile.get(2).get(entryNumber);
+            this.product_type = allProductFromFile.get(3).get(entryNumber);
+            this.product_unit_price = Double.parseDouble(allProductFromFile.get(4).get(entryNumber));
+            this.product_packaging_charge = Double.parseDouble(allProductFromFile.get(5).get(entryNumber));
+            this.product_inventory_count = Integer.parseInt(allProductFromFile.get(6).get(entryNumber));
+            this.product_status = allProductFromFile.get(7).get(entryNumber);
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     public static void addProduct(String name, String type, double unitPrice, double pkgCharge, int invCount, String status){
         ProductFile.addNewProduct(name, type, unitPrice,pkgCharge, invCount, status);
     }
@@ -64,7 +83,7 @@ public class Product {
         ArrayList<Product> allProducts = new ArrayList<>();
         try {
             ArrayList<ArrayList<String>> allProductFromFile = ProductFile.readAllProducts();
-            int numOfEntries = allProductFromFile.get(1).size();
+            int numOfEntries = allProductFromFile.get(0).size();
             for (int i = 0; i < numOfEntries; i++) {
                 allProducts.add(
                         new Product(
