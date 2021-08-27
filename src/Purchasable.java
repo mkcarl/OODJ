@@ -1,0 +1,3 @@
+interface Purchasable {
+    void checkOut();
+}
