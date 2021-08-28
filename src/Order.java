@@ -5,6 +5,7 @@ import FileIO.RecordNotFoundException;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -14,9 +15,9 @@ import java.util.Date;
  * @author mkcarl
  */
 public class Order {
-    private final String order_id;
+    private String order_id;
     private String order_status;
-    private final Date order_Date;
+    private Date order_Date;
     private ArrayList<OrderItem> order_items;
 
     public Order(String oid, Date date, String ostatus) { // for totally new order
@@ -25,14 +26,45 @@ public class Order {
         this.order_status = ostatus;
     }
 
-    public Order(String oid, Date date, String ostatus, ArrayList<String> PIDs){ // for already existing orders
-        this.order_id = oid;
-        this.order_Date = date;
-        this.order_status = ostatus;
 
-        for (String pid :
-                PIDs) {
-            this.order_items.add( new OrderItem( new Product(pid) ) );
+
+//    public Order(String oid, Date date, String ostatus, ArrayList<String> PIDs){ // for already existing orders
+//        this.order_id = oid;
+//        this.order_Date = date;
+//        this.order_status = ostatus;
+//
+//        for (String pid :
+//                PIDs) {
+//            this.order_items.add( new OrderItem( new Product(pid) ) );
+//        }
+//    }
+
+    public Order(String oid){
+        try {
+            ArrayList<ArrayList<String>> allOrderFromFile = OrderFile.readAllOrders();
+            int entryIndex = allOrderFromFile.get(0).indexOf(oid);
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+            this.order_id = allOrderFromFile.get(0).get(entryIndex);
+            this.order_Date = sdf.parse(allOrderFromFile.get(0).get(entryIndex));
+            this.order_status = allOrderFromFile.get(2).get(entryIndex);
+
+            ArrayList<String> allPIDs = OrderProductFile.getPIDs(this.order_id);
+            ArrayList<ArrayList<String>> allOrderProductFromFile = OrderProductFile.readAllOrdersProducts();
+            ArrayList<Integer> allIndicesOfOID = OrderProductFile.indicesOf(this.order_id);
+            for (int i = 0; i < allPIDs.size(); i++) {
+                OrderItem orderItem =new OrderItem(new Product(allPIDs.get(i))); // create an order item with the product inside, where the quantity is still null
+                orderItem.modifyQuantity( // modify the quantity to whatever is in the file
+                        Integer.parseInt(
+                                allOrderProductFromFile.get(2).get(allIndicesOfOID.get(i))
+                        )
+                );
+                this.order_items.add(orderItem);
+
+            }
+
+        } catch (ParseException | IOException | RecordNotFoundException e) {
+            e.printStackTrace();
         }
     }
 
@@ -114,8 +146,8 @@ public class Order {
         return total;
     }
 
-    public void checkOut(){
-        this.order_status = OrderStatus.PAID.name();
+    public void checkOutCart(){
+        this.order_status = "PAID";
 
         try {
             OrderFile.updateEntry(2, OrderFile.indexOf(this.order_id), this.order_status);

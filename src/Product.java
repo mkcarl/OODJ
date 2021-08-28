@@ -14,8 +14,6 @@ public class Product {
     private double product_unit_price, product_packaging_charge;
     private int product_inventory_count;
 
-    private int rowNumber;
-
     public Product(String id, String name, String type, double unitPrice, double pkgCharge, int invCount, String status){
         this.product_id = id;
         this.product_name = name;
@@ -25,11 +23,6 @@ public class Product {
         this.product_inventory_count = invCount;
         this.product_status = status;
 
-        try {
-            this.rowNumber = ProductFile.indexOf(product_id);
-        } catch (IOException | RecordNotFoundException e) {
-            e.printStackTrace();
-        }
     }
 
     public Product(String pid){
@@ -37,13 +30,13 @@ public class Product {
             ArrayList<ArrayList<String>> allProductFromFile = ProductFile.readAllProducts();
             int entryNumber = allProductFromFile.get(0).indexOf(pid);
 
-            this.product_id = allProductFromFile.get(1).get(entryNumber);
-            this.product_name = allProductFromFile.get(2).get(entryNumber);
-            this.product_type = allProductFromFile.get(3).get(entryNumber);
-            this.product_unit_price = Double.parseDouble(allProductFromFile.get(4).get(entryNumber));
-            this.product_packaging_charge = Double.parseDouble(allProductFromFile.get(5).get(entryNumber));
-            this.product_inventory_count = Integer.parseInt(allProductFromFile.get(6).get(entryNumber));
-            this.product_status = allProductFromFile.get(7).get(entryNumber);
+            this.product_id = allProductFromFile.get(0).get(entryNumber);
+            this.product_name = allProductFromFile.get(1).get(entryNumber);
+            this.product_type = allProductFromFile.get(2).get(entryNumber);
+            this.product_unit_price = Double.parseDouble(allProductFromFile.get(3).get(entryNumber));
+            this.product_packaging_charge = Double.parseDouble(allProductFromFile.get(4).get(entryNumber));
+            this.product_inventory_count = Integer.parseInt(allProductFromFile.get(5).get(entryNumber));
+            this.product_status = allProductFromFile.get(6).get(entryNumber);
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -55,7 +48,7 @@ public class Product {
         ProductFile.addNewProduct(name, type, unitPrice,pkgCharge, invCount, status);
     }
 
-    public static void deleteProdcut(String productID){
+    public static void deleteProduct(String productID){
         try {
             int productRowNum = ProductFile.indexOf(productID);
             if (ProductFile.readColumn("ustatus").get(productRowNum).equals("INACTIVE")) {
@@ -68,13 +61,14 @@ public class Product {
 
     public void udpateProduct(){ // likely redudant
         try {
-            ProductFile.updateEntry(1, rowNumber, this.product_name);
-            ProductFile.updateEntry(2, rowNumber, this.product_type);
-            ProductFile.updateEntry(3, rowNumber, Double.toString(this.product_unit_price));
-            ProductFile.updateEntry(4, rowNumber, Double.toString(this.product_packaging_charge));
-            ProductFile.updateEntry(5, rowNumber, Integer.toString(this.product_inventory_count));
-            ProductFile.updateEntry(6, rowNumber, this.product_status);
-        } catch (IOException e) {
+            int entryNumber = ProductFile.indexOf(this.product_id);
+            ProductFile.updateEntry(1, entryNumber, this.product_name);
+            ProductFile.updateEntry(2, entryNumber, this.product_type);
+            ProductFile.updateEntry(3, entryNumber, Double.toString(this.product_unit_price));
+            ProductFile.updateEntry(4, entryNumber, Double.toString(this.product_packaging_charge));
+            ProductFile.updateEntry(5, entryNumber, Integer.toString(this.product_inventory_count));
+            ProductFile.updateEntry(6, entryNumber, this.product_status);
+        } catch (IOException | RecordNotFoundException e) {
             e.printStackTrace();
         }
     }
@@ -137,8 +131,8 @@ public class Product {
         this.product_inventory_count = quantity;
 
         try {
-            ProductFile.updateEntry(5, rowNumber, Integer.toString(this.product_inventory_count));
-        } catch (IOException e) {
+            ProductFile.updateEntry(5, ProductFile.indexOf(product_id), Integer.toString(this.product_inventory_count));
+        } catch (IOException | RecordNotFoundException e) {
             e.printStackTrace();
         }
 
@@ -147,8 +141,8 @@ public class Product {
     public void setProductName(String name){
         this.product_name = name;
         try {
-            ProductFile.updateEntry(1, rowNumber, this.product_name);
-        } catch (IOException e) {
+            ProductFile.updateEntry(1, ProductFile.indexOf(product_id), this.product_name);
+        } catch (IOException | RecordNotFoundException e) {
             e.printStackTrace();
         }
 
@@ -164,8 +158,8 @@ public class Product {
         }
 
         try {
-            ProductFile.updateEntry(2, rowNumber, this.product_type);
-        } catch (IOException e) {
+            ProductFile.updateEntry(2, ProductFile.indexOf(product_id), this.product_type);
+        } catch (IOException | RecordNotFoundException e) {
             e.printStackTrace();
         }
 
@@ -174,8 +168,8 @@ public class Product {
     public void setProductStatus(String status){
         this.product_status = status;
         try {
-            ProductFile.updateEntry(6, rowNumber, this.product_status);
-        } catch (IOException e) {
+            ProductFile.updateEntry(6, ProductFile.indexOf(product_id), this.product_status);
+        } catch (IOException | RecordNotFoundException e) {
             e.printStackTrace();
         }
     }
@@ -184,8 +178,8 @@ public class Product {
         this.product_unit_price = unitPrice;
 
         try {
-            ProductFile.updateEntry(3, rowNumber, Double.toString(this.product_unit_price));
-        } catch (IOException e) {
+            ProductFile.updateEntry(3, ProductFile.indexOf(product_id), Double.toString(this.product_unit_price));
+        } catch (IOException | RecordNotFoundException e) {
             e.printStackTrace();
         }
 
@@ -195,8 +189,8 @@ public class Product {
         this.product_packaging_charge = pkgCharge;
 
         try {
-            ProductFile.updateEntry(4, rowNumber, Double.toString(this.product_packaging_charge));
-        } catch (IOException e) {
+            ProductFile.updateEntry(4, ProductFile.indexOf(product_id), Double.toString(this.product_packaging_charge));
+        } catch (IOException | RecordNotFoundException e) {
             e.printStackTrace();
         }
 
