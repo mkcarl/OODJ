@@ -12,7 +12,7 @@ public class Test {
         try {
 //            FileIO.UserFile.updateEntry(1, 1, Integer.toString(3498579));
 //            FileIO.UserFile.deleteEntry(1);
-            createDummyUsers();
+//            createDummyUsers();
 //            System.out.println(FileIO.UserFile.indexOf("A000005"));
 
 //            createDummyProducts();
@@ -20,7 +20,7 @@ public class Test {
 //            FileIO.ProductFile.updateEntry(1,1, "MaybeACup");
 //            FileIO.ProductFile.deleteEntry(FileIO.ProductFile.indexOf("P000003"));
 
-//            createDummyOrders();
+            createDummyOrders();
 
 //            createDummyOrderItem();
         } catch (Exception e) {

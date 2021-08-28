@@ -81,13 +81,13 @@ public class Product {
             for (int i = 0; i < numOfEntries; i++) {
                 allProducts.add(
                         new Product(
+                                allProductFromFile.get(0).get(i),
                                 allProductFromFile.get(1).get(i),
                                 allProductFromFile.get(2).get(i),
-                                allProductFromFile.get(3).get(i),
+                                Double.parseDouble(allProductFromFile.get(3).get(i)),
                                 Double.parseDouble(allProductFromFile.get(4).get(i)),
-                                Double.parseDouble(allProductFromFile.get(5).get(i)),
-                                Integer.parseInt(allProductFromFile.get(6).get(i)),
-                                allProductFromFile.get(7).get(i)
+                                Integer.parseInt(allProductFromFile.get(5).get(i)),
+                                allProductFromFile.get(6).get(i)
                         )
                 );
             }

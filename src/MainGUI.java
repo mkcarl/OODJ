@@ -1,7 +1,12 @@
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.Locale;
 
 /**
  * @author mkcarl
@@ -97,6 +102,8 @@ public class MainGUI extends JFrame{
     private JLabel lblTitle_NewProduct;
 
     private User currentUser;
+    ArrayList<Product> allProducts;
+    DefaultTableModel productModel;
 
     public MainGUI(){
         setContentPane(parentPanel);
@@ -173,6 +180,25 @@ public class MainGUI extends JFrame{
             public void actionPerformed(ActionEvent actionEvent) {
                 cl.show(parentPanel, "productListingPanel");
 
+                allProducts = Product.readAllProduct();
+
+                // display all products if active
+                for (Product prod :
+                        allProducts) {
+                    if (prod.getProductStatus().equals("ACTIVE")){
+                        Object[] details = {
+                                prod.getProductID(),
+                                prod.getProductName(),
+                                prod.getProductType(),
+                                prod.getProductUnitPrice(),
+                                prod.getProductPackagingCharge(),
+                                prod.getProductInventoryCount()
+                        };
+                        productModel.insertRow(productModel.getRowCount(), details);
+                    }
+                }
+
+
             }
         });
         btnLogout_Customer.addActionListener(new ActionListener() {
@@ -214,6 +240,69 @@ public class MainGUI extends JFrame{
                 cl.show(parentPanel, "newProductPanel");
             }
         });
+        btnAddToCart_ProductListing.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                if (tblProductListing.getSelectedRow() != -1){
+                    int index = tblProductListing.getSelectedRow();
+                    System.out.println(index);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Please select an item to be added to cart!");
+                }
+            }
+        });
+        btnGo_ProductListing.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                productModel.setRowCount(0); // clear all rows
+
+                for (Product prod :
+                        allProducts) {
+                    if (
+                            prod.getProductName().toLowerCase().contains(txtSearch_ProductListing.getText().toLowerCase())
+                                    && prod.getProductStatus().equals("ACTIVE")
+                    ) {
+                        Object[] details = {
+                                prod.getProductID(),
+                                prod.getProductName(),
+                                prod.getProductType(),
+                                prod.getProductUnitPrice(),
+                                prod.getProductPackagingCharge(),
+                                prod.getProductInventoryCount()
+                        };
+                        productModel.insertRow(productModel.getRowCount(), details);
+                    }
+                }
+            }
+        });
+
+        txtSearch_ProductListing.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent keyEvent) {
+                super.keyTyped(keyEvent);
+                productModel.setRowCount(0); // clear all rows
+
+                for (Product prod :
+                        allProducts) {
+                    if (
+                            prod.getProductName().toLowerCase().contains(txtSearch_ProductListing.getText().toLowerCase())
+                                    && prod.getProductStatus().equals("ACTIVE")
+                    ) {
+                        Object[] details = {
+                                prod.getProductID(),
+                                prod.getProductName(),
+                                prod.getProductType(),
+                                prod.getProductUnitPrice(),
+                                prod.getProductPackagingCharge(),
+                                prod.getProductInventoryCount()
+                        };
+                        productModel.insertRow(productModel.getRowCount(), details);
+                    }
+                }
+            }
+        });
+        txtSearch_ProductListing.addKeyListener(new KeyAdapter() {
+        });
     }
 
     public static void main(String[] args) {
@@ -226,8 +315,21 @@ public class MainGUI extends JFrame{
         MainGUI mainGUI = new MainGUI();
         mainGUI.pack();
         mainGUI.setVisible(true);
+        mainGUI.setLocationRelativeTo(null); // middle of screen
         mainGUI.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
 
+    private void createUIComponents() {
+        // Product listing page table initialisation
+        Object[] columnNames = {"Product ID", "Name", "Type", "Unit price", "Packaging charge", "Stock available"};
+        productModel = new DefaultTableModel(0, columnNames.length){
+            @Override
+            public boolean isCellEditable(int row, int column){
+                return false;
+            }
+        };
+        productModel.setColumnIdentifiers(columnNames);
+        tblProductListing = new JTable(productModel);
+    }
 }

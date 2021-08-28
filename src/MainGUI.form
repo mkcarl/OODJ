@@ -618,7 +618,7 @@
             <properties/>
             <border type="none"/>
             <children>
-              <component id="65462" class="javax.swing.JTable" binding="tblProductListing">
+              <component id="65462" class="javax.swing.JTable" binding="tblProductListing" custom-create="true">
                 <constraints/>
                 <properties/>
               </component>
