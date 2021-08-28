@@ -222,4 +222,24 @@ public class OrderFile extends MyFile {
             throw new RecordNotFoundException(String.format("The OID %s does not exist in %s", oid, fileName));
         }
     }
+    /**
+     * @param uid Order ID
+     * @return ArrayList of Integer which corresponds to the specified UserID
+     */
+    public static ArrayList<Integer> indicesOf(String uid) throws IOException, RecordNotFoundException {
+        ArrayList<String> allUID = readColumn("uid");
+        ArrayList<Integer> targetIndices = new ArrayList<>();
+
+        for (int i = 0; i < allUID.size(); i++) {
+            if (allUID.get(i).equals(uid)){
+                targetIndices.add(i);
+            }
+        }
+
+
+        if (targetIndices.size() == 0){
+            throw new RecordNotFoundException("No such User ID");
+        }
+        return targetIndices;
+    }
 }
