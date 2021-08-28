@@ -117,7 +117,7 @@ public class Order {
 
     
     public static void addOrder(String UID){
-        OrderFile.addNewOrder(new Date(), OrderStatus.PENDING.name(), UID);
+        OrderFile.addNewOrder(new Date(), "PENDING", UID);
     }
 
     public void removeItem(int index){

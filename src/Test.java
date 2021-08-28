@@ -34,10 +34,10 @@ public class Test {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        UserFile.addNewUser("123", "Carl", Gender.MALE.name(), "123@gmail.com", "111222333", Role.CUSTOMER.name(), UserStatus.ACTIVE.name());
-        UserFile.addNewUser("1234", "Bob", Gender.MALE.name(), "1234@gmail.com", "111222333", Role.ADMIN.name(), UserStatus.ACTIVE.name());
-        UserFile.addNewUser("1235", "Jane", Gender.FEMALE.name(), "1235@gmail.com", "111222333", Role.CUSTOMER.name(), UserStatus.ACTIVE.name());
-        UserFile.addNewUser("1236", "Mary", Gender.FEMALE.name(), "1236@gmail.com", "111222333", Role.ADMIN.name(), UserStatus.ACTIVE.name());
+        UserFile.addNewUser("123", "Carl", "MALE", "123@gmail.com", "111222333", "CUSTOMER", "ACTIVE");
+        UserFile.addNewUser("1234", "Bob", "MALE", "1234@gmail.com", "111222333", "ADMIN", "ACTIVE");
+        UserFile.addNewUser("1235", "Jane", "FEMALE", "1235@gmail.com", "111222333", "CUSTOMER", "ACTIVE");
+        UserFile.addNewUser("1236", "Mary", "FEMALE", "1236@gmail.com", "111222333", "ADMIN", "ACTIVE");
         // TODO : deleting user, change status or delete record
 
     }
@@ -48,10 +48,10 @@ public class Test {
         } catch (IOException e){
             e.printStackTrace();
         }
-        ProductFile.addNewProduct("Toilet paper", ProductType.NOT_FRAGILE.name(), 12.99, 0.5, 100, ProductStatus.ACTIVE.name());
-        ProductFile.addNewProduct("Cup", ProductType.FRAGILE.name(), 19.99, 1.5, 10, ProductStatus.ACTIVE.name());
-        ProductFile.addNewProduct("Water bottle", ProductType.NOT_FRAGILE.name(), 33.99, 0.5, 104, ProductStatus.ACTIVE.name());
-        ProductFile.addNewProduct("Sugar", ProductType.NOT_FRAGILE.name(), 3.99, 0.5, 1023, ProductStatus.ACTIVE.name());
+        ProductFile.addNewProduct("Toilet paper", "NOT_FRAGILE", 12.99, 0.5, 100, "ACTIVE");
+        ProductFile.addNewProduct("Cup", "NOT_FRAGILE", 19.99, 1.5, 10, "ACTIVE");
+        ProductFile.addNewProduct("Water bottle", "NOT_FRAGILE", 33.99, 0.5, 104, "ACTIVE");
+        ProductFile.addNewProduct("Sugar", "NOT_FRAGILE", 3.99, 0.5, 1023, "ACTIVE");
     }
 
     public static void createDummyOrders(){
@@ -60,8 +60,8 @@ public class Test {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        OrderFile.addNewOrder(new Date(), OrderStatus.PENDING.name(), "C000001");
-        OrderFile.addNewOrder(new Date(), OrderStatus.PENDING.name(), "A000004");
+        OrderFile.addNewOrder(new Date(), "PENDING", "C000001");
+        OrderFile.addNewOrder(new Date(), "PENDING", "A000004");
 
     }
 

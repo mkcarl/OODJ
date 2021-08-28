@@ -52,7 +52,7 @@ public class Product {
         try {
             int productRowNum = ProductFile.indexOf(productID);
             if (ProductFile.readColumn("ustatus").get(productRowNum).equals("INACTIVE")) {
-                ProductFile.updateEntry(7, productRowNum, ProductStatus.INACTIVE.name());
+                ProductFile.updateEntry(7, productRowNum, "INACTIVE");
             }
         } catch (IOException | RecordNotFoundException e) {
             e.printStackTrace();

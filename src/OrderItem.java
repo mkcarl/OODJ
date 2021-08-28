@@ -26,7 +26,7 @@ public class OrderItem {
     }
 
     public boolean isAvailable(){
-        return this.item_product.getProductStatus().equals(ProductStatus.ACTIVE.name());
+        return this.item_product.getProductStatus().equals("ACTIVE");
     }
 
     public boolean isEnough(int quantity){
