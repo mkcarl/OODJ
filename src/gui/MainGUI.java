@@ -8,7 +8,7 @@ import java.awt.event.ActionListener;
 /**
  * @author mkcarl
  */
-public class MainGUI extends JDialog{
+public class MainGUI extends JFrame{
     private JPanel parentPanel;
     private JPanel loginPanel;
     private JLabel lblLogin;
@@ -65,7 +65,7 @@ public class MainGUI extends JDialog{
     private JButton btnLogout_Customer;
     private JTextField txtSearch_ProductListing;
     private JButton btnGo_ProductListing;
-    private JButton btnAdd_ProductListing;
+    private JButton btnAddToCart_ProductListing;
     private JButton btnDelete_ManageProduct;
     private JButton btnEdit_ManageProduct;
     private JButton btnAdd_ManageProduct;
@@ -75,12 +75,33 @@ public class MainGUI extends JDialog{
     private JLabel lblSurchargeOutput;
     private JLabel lblAmountOutput;
     private JLabel lblOidOutput;
+    private JButton btnPlusOne;
+    private JButton btnMinusOne;
+    private JPanel newCustomerPanel;
+    private JTextField txtUID;
+    private JRadioButton maleRadioButton;
+    private JRadioButton femaleRadioButton;
+    private JButton btnCancel_NewCustomer;
+    private JButton btnSave_NewCustomer;
+    private JTextField txtPassword;
+    private JTextField txtName;
+    private JTextField txtEmail;
+    private JTextField txtPhoneNumber;
+    private JTextField txtPID;
+    private JTextField txtItemName;
+    private JTextField txtUnitPrice;
+    private JTextField txtInventoryCount;
+    private JTextField txtPackagingCharge;
+    private JPanel newProductPanel;
+    private JButton btnCancel_NewProduct;
+    private JButton btnSave_NewProduct;
+    private JLabel lblTitle_NewCustomer;
+    private JLabel lblTitle_NewProduct;
 
     // private User currentUser;
 
     public MainGUI(){
         setContentPane(parentPanel);
-        setModal(true);
 
         parentPanel.add(loginPanel, "loginPanel");
         parentPanel.add(customerPanel, "customerPanel");
@@ -89,6 +110,8 @@ public class MainGUI extends JDialog{
         parentPanel.add(productListingPanel, "productListingPanel");
         parentPanel.add(adminWelcomePanel, "adminWelcomePanel");
         parentPanel.add(customerWelcomePanel, "customerWelcomePanel");
+        parentPanel.add(newCustomerPanel, "newCustomerPanel");
+        parentPanel.add(newProductPanel, "newProductPanel");
 
         final CardLayout cl = (CardLayout) parentPanel.getLayout();
         cl.show(parentPanel, "loginPanel");
@@ -168,6 +191,31 @@ public class MainGUI extends JDialog{
 
             }
         });
+        btnCancel_NewCustomer.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                cl.show(parentPanel, "customerPanel");
+            }
+        });
+        btnAdd.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                cl.show(parentPanel, "newCustomerPanel");
+            }
+        });
+        btnCancel_NewProduct.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                cl.show(parentPanel, "manageProductPanel");
+
+            }
+        });
+        btnAdd_ManageProduct.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                cl.show(parentPanel, "newProductPanel");
+            }
+        });
     }
 
     public static void main(String[] args) {
@@ -180,7 +228,7 @@ public class MainGUI extends JDialog{
         MainGUI mainGUI = new MainGUI();
         mainGUI.pack();
         mainGUI.setVisible(true);
-        System.exit(0);
+        mainGUI.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
 
