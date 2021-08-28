@@ -7,11 +7,15 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class Customer extends User{
+public class Customer extends PurchasableUser{
     private static int userRowNum; //row number in txt file
 
     public Customer(String uid, String pw, String uname, String gender, String email, String phone_num, String role, String status){
         super( uid,  pw, uname, gender,  email,  phone_num,  role,  status);
+    }
+
+    public Customer (String uid) {
+        super(uid);
     }
 
     public static void addCustomer(String pw, String name, String gender, String email, String phone_num, String role, String status){
@@ -24,24 +28,6 @@ public class Customer extends User{
                     UserFile.updateEntry(7, userRowNum, "INACTIVE"); // change it to inactive
                 }
         } catch (RecordNotFoundException | IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public Customer (String uid){
-        try{
-            ArrayList<ArrayList<String>> allUserFromFile = UserFile.readAllUsers();
-            int entryNumber = allUserFromFile.get(0).indexOf(uid);
-
-            this.user_id = allUserFromFile.get(1).get(entryNumber);
-            this.user_password = allUserFromFile.get(2).get(entryNumber);
-            this.user_name = allUserFromFile.get(3).get(entryNumber);
-            this.user_gender = allUserFromFile.get(4).get(entryNumber);
-            this.user_email = allUserFromFile.get(5).get(entryNumber);
-            this.user_phone_number = allUserFromFile.get(6).get(entryNumber);
-            this.user_role = allUserFromFile.get(7).get(entryNumber);
-            this.user_status = allUserFromFile.get(8).get(entryNumber);
-        } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
     }

@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class PurchasableUser extends User implements Purchasable {
+public abstract class PurchasableUser extends User implements Purchasable {
     private Order order_cart;
 
     public PurchasableUser(String uid, String pw, String uname, String gender, String email, String phone_num, String role, String status) {
@@ -48,6 +48,10 @@ public class PurchasableUser extends User implements Purchasable {
                 ioException.printStackTrace();
             }
         }
+    }
+
+    public PurchasableUser (String uid) {
+        super(uid);
     }
 
     public Order getOrder_cart() {
