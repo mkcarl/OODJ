@@ -1,5 +1,3 @@
-package gui;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -98,7 +96,7 @@ public class MainGUI extends JFrame{
     private JLabel lblTitle_NewCustomer;
     private JLabel lblTitle_NewProduct;
 
-    // private User currentUser;
+    private User currentUser;
 
     public MainGUI(){
         setContentPane(parentPanel);
