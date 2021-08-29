@@ -261,7 +261,8 @@ public class MainGUI extends JFrame{
             e.printStackTrace();
         }
         MainGUI mainGUI = new MainGUI();
-        mainGUI.pack();
+        mainGUI.setSize(1280, 720);
+        mainGUI.setResizable(false);
         mainGUI.setVisible(true);
         mainGUI.setLocationRelativeTo(null); // middle of screen
         mainGUI.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -280,6 +281,11 @@ public class MainGUI extends JFrame{
         productModel.setColumnIdentifiers(columnNames);
         tblProductListing = new JTable(productModel);
         tblProductListing.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        tblProductListing.setFont(tblProductListing.getFont().deriveFont((float) 16));
+        tblProductListing.setRowHeight(tblProductListing.getRowHeight()+8);
+        tblProductListing.getTableHeader().setFont(
+                tblProductListing.getTableHeader().getFont().deriveFont(Font.BOLD, (float) 16)
+        );
         // Cart page table initialisation
         columnNames = new Object[]{"Product Name", "Unit price", "Packaging charge", "Quantity", "Sub-total"};
         cartModel = new DefaultTableModel(0, columnNames.length){
@@ -291,6 +297,11 @@ public class MainGUI extends JFrame{
         cartModel.setColumnIdentifiers(columnNames);
         tblCart = new JTable(cartModel);
         tblCart.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        tblCart.setFont(tblCart.getFont().deriveFont((float) 16));
+        tblCart.setRowHeight(tblCart.getRowHeight()+8);
+        tblCart.getTableHeader().setFont(
+                tblCart.getTableHeader().getFont().deriveFont(Font.BOLD, (float) 16)
+        );
     }
 
     private void showUpdatedProductListingTable(){
