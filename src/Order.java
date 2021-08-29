@@ -24,6 +24,7 @@ public class Order {
         this.order_id = oid;
         this.order_Date = date;
         this.order_status = ostatus;
+        this.order_items = OrderItem.readAllOrderItemOf(oid);
     }
 
 
@@ -46,24 +47,28 @@ public class Order {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
             this.order_id = allOrderFromFile.get(0).get(entryIndex);
-            this.order_Date = sdf.parse(allOrderFromFile.get(0).get(entryIndex));
+            this.order_Date = sdf.parse(allOrderFromFile.get(1).get(entryIndex));
             this.order_status = allOrderFromFile.get(2).get(entryIndex);
+            this.order_items = OrderItem.readAllOrderItemOf(oid);
 
-            ArrayList<String> allPIDs = OrderProductFile.getPIDs(this.order_id);
-            ArrayList<ArrayList<String>> allOrderProductFromFile = OrderProductFile.readAllOrdersProducts();
-            ArrayList<Integer> allIndicesOfOID = OrderProductFile.indicesOf(this.order_id);
-            for (int i = 0; i < allPIDs.size(); i++) {
-                OrderItem orderItem =new OrderItem(new Product(allPIDs.get(i))); // create an order item with the product inside, where the quantity is still null
-                orderItem.modifyQuantity( // modify the quantity to whatever is in the file
-                        Integer.parseInt(
-                                allOrderProductFromFile.get(2).get(allIndicesOfOID.get(i))
-                        )
-                );
-                this.order_items.add(orderItem);
-
-            }
-
-        } catch (ParseException | IOException | RecordNotFoundException e) {
+//            ArrayList<String> allPIDs = OrderProductFile.getPIDs(this.order_id);
+//            ArrayList<ArrayList<String>> allOrderProductFromFile = OrderProductFile.readAllOrdersProducts();
+//            ArrayList<Integer> allIndicesOfOID = OrderProductFile.indicesOf(this.order_id);
+//            for (int i = 0; i < allPIDs.size(); i++) {
+//                OrderItem orderItem =new OrderItem(new Product(allPIDs.get(i))); // create an order item with the product inside, where the quantity is still null
+//                orderItem.modifyQuantity( // modify the quantity to whatever is in the file
+//                        Integer.parseInt(
+//                                allOrderProductFromFile.get(2).get(allIndicesOfOID.get(i))
+//                        )
+//                );
+//                orderItem.calculateAmount();
+//                this.order_items.add(orderItem);
+//
+//            }
+//
+//        } catch (RecordNotFoundException e) {
+//            System.out.println("New order has no existing items..");
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -71,7 +76,7 @@ public class Order {
     public void addItem(Product prod) {
         try {
             ArrayList<String> allPIDs = OrderProductFile.getPIDs(this.order_id);
-            order_items.add(new OrderItem(prod));
+            order_items.add(new OrderItem(this.order_id, prod));
 
             for (OrderItem orderItem :
                     this.order_items) {
@@ -88,7 +93,7 @@ public class Order {
 
     // ??
     public void addItem(String PID){
-        order_items.add(new OrderItem(new Product(PID)));
+        order_items.add(new OrderItem(this.order_id, new Product(PID)));
     }
 
 

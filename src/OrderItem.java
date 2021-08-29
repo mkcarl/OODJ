@@ -1,6 +1,9 @@
 import FileIO.OrderProductFile;
 
 import java.io.FileNotFoundException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 /**
@@ -11,11 +14,21 @@ public class OrderItem {
     private int item_quantity;
     private double item_amount;
 
-    public OrderItem(Product prod){
+    public OrderItem(String oid, Product prod){
         this.item_product = prod;
         try {
-            this.item_amount = calculateAmount();
-        } catch (Exception e) {
+            ArrayList<ArrayList<String>> allOrderProductFromFile = OrderProductFile.readAllOrdersProducts();
+            for (int i = 0; i < allOrderProductFromFile.get(0).size(); i++) {
+                if (
+                        allOrderProductFromFile.get(0).get(i).equals(oid) // if order id match
+                                && allOrderProductFromFile.get(1).get(i).equals(prod.getProductID()) // and product id match
+                ){
+                this.item_quantity = Integer.parseInt(allOrderProductFromFile.get(2).get(i));
+                this.item_amount = calculateAmount();
+                break;
+                }
+            }
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
     }
@@ -38,7 +51,8 @@ public class OrderItem {
     }
 
     public double calculateAmount(){
-        double amount = this.item_product.getProductUnitPrice() * this.item_quantity;
+        double amount = (this.item_product.getProductUnitPrice() + this.item_product.getProductPackagingCharge()) * this.item_quantity;
+        amount = new BigDecimal(amount).setScale(2, RoundingMode.HALF_UP).doubleValue();
         this.item_amount = amount;
         return amount;
 
@@ -80,7 +94,7 @@ public class OrderItem {
             int numberOfEnties = allOrderItems.get(0).size();
             for (int i = 0; i < numberOfEnties; i++) {
                 if (allOrderItems.get(0).get(i).equals(oid)){
-                    target.add(new OrderItem( new Product(allOrderItems.get(1).get(i)) ));
+                    target.add(new OrderItem( oid, new Product(allOrderItems.get(1).get(i)) ));
                 }
             }
 

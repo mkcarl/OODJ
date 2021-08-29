@@ -6,7 +6,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
-import java.util.Locale;
 
 /**
  * @author mkcarl
@@ -24,7 +23,6 @@ public class MainGUI extends JFrame{
     private JPanel customerPanel;
     private JLabel lblCustomer;
     private JTextField txtSearch_ManageCustomer;
-    private JButton btnGo_ManageCustomer;
     private JScrollPane JScrollCustomer;
     private JTable tblCustomer;
     private JButton btnAdd;
@@ -39,9 +37,6 @@ public class MainGUI extends JFrame{
     private JTable tblCart;
     private JButton btnRemove_Cart;
     private JButton btnCheckout_Cart;
-    private JLabel lblSurcharge;
-    private JLabel lblTotalAmount;
-    private JLabel lblOrderID;
     private JLabel lblCart;
     private JPanel manageProductPanel;
     private JLabel lblManageProduct;
@@ -67,16 +62,13 @@ public class MainGUI extends JFrame{
     private JLabel lblWelcome_Customer;
     private JButton btnLogout_Customer;
     private JTextField txtSearch_ProductListing;
-    private JButton btnGo_ProductListing;
     private JButton btnAddToCart_ProductListing;
     private JButton btnDelete_ManageProduct;
     private JButton btnEdit_ManageProduct;
     private JButton btnAdd_ManageProduct;
-    private JButton btnGo_ManageProduct;
     private JTextField txtSearch_ManageProduct;
-    private JButton btnGo_Cart;
     private JLabel lblSurchargeOutput;
-    private JLabel lblAmountOutput;
+    private JLabel lblItemTotalOutput;
     private JLabel lblOidOutput;
     private JButton btnPlusOne;
     private JButton btnMinusOne;
@@ -100,10 +92,12 @@ public class MainGUI extends JFrame{
     private JButton btnSave_NewProduct;
     private JLabel lblTitle_NewCustomer;
     private JLabel lblTitle_NewProduct;
+    private JLabel lblGrandTotal;
 
     private User currentUser;
     ArrayList<Product> allProducts;
     DefaultTableModel productModel;
+    DefaultTableModel cartModel;
 
     public MainGUI(){
         setContentPane(parentPanel);
@@ -149,6 +143,7 @@ public class MainGUI extends JFrame{
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 cl.show(parentPanel, "productListingPanel");
+                showUpdatedProductListingTable();
             }
         });
         btnBack_Cart.addActionListener(new ActionListener() {
@@ -179,26 +174,7 @@ public class MainGUI extends JFrame{
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 cl.show(parentPanel, "productListingPanel");
-
-                allProducts = Product.readAllProduct();
-
-                // display all products if active
-                for (Product prod :
-                        allProducts) {
-                    if (prod.getProductStatus().equals("ACTIVE")){
-                        Object[] details = {
-                                prod.getProductID(),
-                                prod.getProductName(),
-                                prod.getProductType(),
-                                prod.getProductUnitPrice(),
-                                prod.getProductPackagingCharge(),
-                                prod.getProductInventoryCount()
-                        };
-                        productModel.insertRow(productModel.getRowCount(), details);
-                    }
-                }
-
-
+                showUpdatedProductListingTable();
             }
         });
         btnLogout_Customer.addActionListener(new ActionListener() {
@@ -212,6 +188,7 @@ public class MainGUI extends JFrame{
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 cl.show(parentPanel, "cartPanel");
+                showUpdatedCartTable();
 
             }
         });
@@ -251,57 +228,28 @@ public class MainGUI extends JFrame{
                 }
             }
         });
-        btnGo_ProductListing.addActionListener(new ActionListener() {
+
+        txtSearch_ProductListing.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent keyEvent) {
+                super.keyReleased(keyEvent);
+                searchProductListingTable();
+            }
+        });
+        txtSearch_ProductListing.addKeyListener(new KeyAdapter() {
+        });
+        loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                productModel.setRowCount(0); // clear all rows
-
-                for (Product prod :
-                        allProducts) {
-                    if (
-                            prod.getProductName().toLowerCase().contains(txtSearch_ProductListing.getText().toLowerCase())
-                                    && prod.getProductStatus().equals("ACTIVE")
-                    ) {
-                        Object[] details = {
-                                prod.getProductID(),
-                                prod.getProductName(),
-                                prod.getProductType(),
-                                prod.getProductUnitPrice(),
-                                prod.getProductPackagingCharge(),
-                                prod.getProductInventoryCount()
-                        };
-                        productModel.insertRow(productModel.getRowCount(), details);
-                    }
-                }
+                currentUser = new Customer("C000001");
             }
         });
-
-        txtSearch_ProductListing.addKeyListener(new KeyAdapter() {
+        txtSearch_Cart.addKeyListener(new KeyAdapter() {
             @Override
-            public void keyTyped(KeyEvent keyEvent) {
-                super.keyTyped(keyEvent);
-                productModel.setRowCount(0); // clear all rows
-
-                for (Product prod :
-                        allProducts) {
-                    if (
-                            prod.getProductName().toLowerCase().contains(txtSearch_ProductListing.getText().toLowerCase())
-                                    && prod.getProductStatus().equals("ACTIVE")
-                    ) {
-                        Object[] details = {
-                                prod.getProductID(),
-                                prod.getProductName(),
-                                prod.getProductType(),
-                                prod.getProductUnitPrice(),
-                                prod.getProductPackagingCharge(),
-                                prod.getProductInventoryCount()
-                        };
-                        productModel.insertRow(productModel.getRowCount(), details);
-                    }
-                }
+            public void keyReleased(KeyEvent keyEvent) {
+                super.keyReleased(keyEvent);
+                searchCartTable();
             }
-        });
-        txtSearch_ProductListing.addKeyListener(new KeyAdapter() {
         });
     }
 
@@ -331,5 +279,100 @@ public class MainGUI extends JFrame{
         };
         productModel.setColumnIdentifiers(columnNames);
         tblProductListing = new JTable(productModel);
+        tblProductListing.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        // Cart page table initialisation
+        columnNames = new Object[]{"Product Name", "Unit price", "Packaging charge", "Quantity", "Sub-total"};
+        cartModel = new DefaultTableModel(0, columnNames.length){
+            @Override
+            public boolean isCellEditable(int row, int column){
+                return false;
+            }
+        };
+        cartModel.setColumnIdentifiers(columnNames);
+        tblCart = new JTable(cartModel);
+        tblCart.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     }
+
+    private void showUpdatedProductListingTable(){
+        productModel.setRowCount(0); // clear all rows
+        txtSearch_ProductListing.setText(""); // clear search box
+
+        allProducts = Product.readAllProduct();
+
+        // display all products if active and have stock
+        for (Product prod :
+                allProducts) {
+            if (prod.getProductStatus().equals("ACTIVE") && prod.getProductInventoryCount() > 0){
+                Object[] details = {
+                        prod.getProductID(),
+                        prod.getProductName(),
+                        prod.getProductType(),
+                        prod.getProductUnitPrice(),
+                        prod.getProductPackagingCharge(),
+                        prod.getProductInventoryCount()
+                };
+                productModel.insertRow(productModel.getRowCount(), details);
+            }
+        }
+    }
+
+    private void searchProductListingTable(){
+        productModel.setRowCount(0); // clear all rows
+
+        for (Product prod :
+                allProducts) {
+            if (
+                    prod.getProductName().toLowerCase().contains(txtSearch_ProductListing.getText().toLowerCase())
+                            && prod.getProductStatus().equals("ACTIVE")
+                            && prod.getProductInventoryCount() > 0
+            ) {
+                Object[] details = {
+                        prod.getProductID(),
+                        prod.getProductName(),
+                        prod.getProductType(),
+                        prod.getProductUnitPrice(),
+                        prod.getProductPackagingCharge(),
+                        prod.getProductInventoryCount()
+                };
+                productModel.insertRow(productModel.getRowCount(), details);
+            }
+        }
+    }
+
+    private void showUpdatedCartTable(){
+        cartModel.setRowCount(0);
+        txtSearch_Cart.setText("");
+
+        for (OrderItem oi :
+                ((Customer) currentUser).getOrder_cart().getOrderItems()) {
+            Object[] details = {
+                    oi.getItemProduct().getProductName(),
+                    oi.getItemProduct().getProductUnitPrice(),
+                    oi.getItemProduct().getProductPackagingCharge(),
+                    oi.getItemQuantity(),
+                    oi.getItemAmount()
+            };
+            cartModel.insertRow(cartModel.getRowCount(), details);
+        }
+    }
+
+    private void searchCartTable(){
+        cartModel.setRowCount(0);
+
+        for (OrderItem oi :
+                ((Customer) currentUser).getOrder_cart().getOrderItems()) {
+            if(oi.getItemProduct().getProductName().toLowerCase().contains(txtSearch_Cart.getText().toLowerCase())) {
+                Object[] details = {
+                        oi.getItemProduct().getProductName(),
+                        oi.getItemProduct().getProductUnitPrice(),
+                        oi.getItemProduct().getProductPackagingCharge(),
+                        oi.getItemQuantity(),
+                        oi.getItemAmount()
+                };
+                cartModel.insertRow(cartModel.getRowCount(), details);
+            }
+        }
+    }
+
+
 }

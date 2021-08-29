@@ -141,19 +141,11 @@
           </component>
           <component id="510e" class="javax.swing.JTextField" binding="txtSearch_ManageCustomer">
             <constraints>
-              <grid row="2" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+              <grid row="2" column="0" row-span="1" col-span="4" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="-1"/>
               </grid>
             </constraints>
             <properties/>
-          </component>
-          <component id="ea44b" class="javax.swing.JButton" binding="btnGo_ManageCustomer">
-            <constraints>
-              <grid row="2" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <text value="Go"/>
-            </properties>
           </component>
           <scrollpane id="f104a" binding="JScrollCustomer">
             <constraints>
@@ -220,7 +212,7 @@
           </component>
         </children>
       </grid>
-      <grid id="780d2" binding="cartPanel" layout-manager="GridLayoutManager" row-count="12" column-count="11" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+      <grid id="780d2" binding="cartPanel" layout-manager="GridLayoutManager" row-count="13" column-count="11" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
           <card name="Card3"/>
@@ -249,19 +241,11 @@
           </component>
           <component id="8614a" class="javax.swing.JTextField" binding="txtSearch_Cart">
             <constraints>
-              <grid row="2" column="0" row-span="1" col-span="10" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+              <grid row="2" column="0" row-span="1" col-span="11" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="-1"/>
               </grid>
             </constraints>
             <properties/>
-          </component>
-          <component id="232e2" class="javax.swing.JButton" binding="btnGo_Cart">
-            <constraints>
-              <grid row="2" column="10" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <text value="Go"/>
-            </properties>
           </component>
           <scrollpane id="a2f53" binding="JScrollCart">
             <constraints>
@@ -270,7 +254,7 @@
             <properties/>
             <border type="none"/>
             <children>
-              <component id="4ccb4" class="javax.swing.JTable" binding="tblCart">
+              <component id="4ccb4" class="javax.swing.JTable" binding="tblCart" custom-create="true">
                 <constraints/>
                 <properties/>
               </component>
@@ -278,12 +262,12 @@
           </scrollpane>
           <vspacer id="8b52d">
             <constraints>
-              <grid row="10" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+              <grid row="11" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
             </constraints>
           </vspacer>
           <component id="a4f1f" class="javax.swing.JButton" binding="btnCheckout_Cart">
             <constraints>
-              <grid row="11" column="10" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <grid row="12" column="10" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <text value="Checkout"/>
@@ -306,17 +290,17 @@
           </hspacer>
           <hspacer id="9e9a2">
             <constraints>
-              <grid row="11" column="4" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <grid row="12" column="4" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
           </hspacer>
           <hspacer id="bff3a">
             <constraints>
-              <grid row="10" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <grid row="11" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
           </hspacer>
           <component id="1d833" class="javax.swing.JButton" binding="btnBack_Cart">
             <constraints>
-              <grid row="11" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <grid row="12" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <text value="Back"/>
@@ -324,33 +308,9 @@
           </component>
           <hspacer id="8675e">
             <constraints>
-              <grid row="11" column="1" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <grid row="12" column="1" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
           </hspacer>
-          <component id="bbe70" class="javax.swing.JLabel" binding="lblSurcharge">
-            <constraints>
-              <grid row="7" column="9" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <text value="Surcharge"/>
-            </properties>
-          </component>
-          <component id="985e4" class="javax.swing.JLabel" binding="lblTotalAmount">
-            <constraints>
-              <grid row="8" column="9" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <text value="Total Amount"/>
-            </properties>
-          </component>
-          <component id="c7abc" class="javax.swing.JLabel" binding="lblOrderID">
-            <constraints>
-              <grid row="9" column="9" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <text value="Order ID"/>
-            </properties>
-          </component>
           <vspacer id="89d7a">
             <constraints>
               <grid row="6" column="10" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
@@ -358,33 +318,9 @@
           </vspacer>
           <vspacer id="b94c5">
             <constraints>
-              <grid row="10" column="9" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+              <grid row="11" column="9" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
             </constraints>
           </vspacer>
-          <component id="42cdd" class="javax.swing.JLabel" binding="lblSurchargeOutput">
-            <constraints>
-              <grid row="7" column="10" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <text value="Label"/>
-            </properties>
-          </component>
-          <component id="e0de" class="javax.swing.JLabel" binding="lblAmountOutput">
-            <constraints>
-              <grid row="8" column="10" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <text value="Label"/>
-            </properties>
-          </component>
-          <component id="9d13d" class="javax.swing.JLabel" binding="lblOidOutput">
-            <constraints>
-              <grid row="9" column="10" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <text value="Label"/>
-            </properties>
-          </component>
           <component id="decbe" class="javax.swing.JLabel" binding="lblCart">
             <constraints>
               <grid row="0" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
@@ -436,6 +372,72 @@
             </constraints>
             <properties>
               <text value="-1"/>
+            </properties>
+          </component>
+          <component id="bbe70" class="javax.swing.JLabel">
+            <constraints>
+              <grid row="9" column="9" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Surcharge"/>
+            </properties>
+          </component>
+          <component id="c7abc" class="javax.swing.JLabel">
+            <constraints>
+              <grid row="7" column="9" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Order ID"/>
+            </properties>
+          </component>
+          <component id="9d13d" class="javax.swing.JLabel" binding="lblOidOutput">
+            <constraints>
+              <grid row="7" column="10" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Label"/>
+            </properties>
+          </component>
+          <component id="42cdd" class="javax.swing.JLabel" binding="lblSurchargeOutput">
+            <constraints>
+              <grid row="9" column="10" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Label"/>
+            </properties>
+          </component>
+          <component id="985e4" class="javax.swing.JLabel">
+            <constraints>
+              <grid row="8" column="9" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Item total"/>
+            </properties>
+          </component>
+          <component id="e0de" class="javax.swing.JLabel" binding="lblItemTotalOutput">
+            <constraints>
+              <grid row="8" column="10" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Label"/>
+            </properties>
+          </component>
+          <component id="20582" class="javax.swing.JLabel">
+            <constraints>
+              <grid row="10" column="9" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <font size="16" style="1"/>
+              <text value="Grand total"/>
+            </properties>
+          </component>
+          <component id="6cd46" class="javax.swing.JLabel" binding="lblGrandTotal">
+            <constraints>
+              <grid row="10" column="10" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <font size="16" style="1"/>
+              <text value="Label"/>
             </properties>
           </component>
         </children>
@@ -491,15 +493,6 @@
               <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
           </hspacer>
-          <component id="84a28" class="javax.swing.JButton" binding="btnGo_ManageProduct">
-            <constraints>
-              <grid row="4" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <font size="16"/>
-              <text value="Go"/>
-            </properties>
-          </component>
           <hspacer id="3d88e">
             <constraints>
               <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
@@ -575,7 +568,7 @@
           </hspacer>
           <component id="79748" class="javax.swing.JTextField" binding="txtSearch_ProductListing">
             <constraints>
-              <grid row="2" column="0" row-span="1" col-span="5" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+              <grid row="2" column="0" row-span="1" col-span="7" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="-1"/>
               </grid>
             </constraints>
@@ -601,14 +594,6 @@
             <properties>
               <font size="26"/>
               <text value="Product Listing"/>
-            </properties>
-          </component>
-          <component id="b0fb5" class="javax.swing.JButton" binding="btnGo_ProductListing">
-            <constraints>
-              <grid row="2" column="5" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <text value="Go"/>
             </properties>
           </component>
           <scrollpane id="b1f54" binding="JScrollProductListing">
