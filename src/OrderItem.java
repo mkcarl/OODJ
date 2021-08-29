@@ -23,6 +23,7 @@ public class OrderItem {
 
     public void modifyQuantity(int qty){
         this.item_quantity = qty;
+        calculateAmount();
     }
 
     public boolean isAvailable(){
@@ -36,22 +37,27 @@ public class OrderItem {
                 this.item_product.getProductInventoryCount() != 0;
     }
 
-    public double calculateAmount() throws Exception {
-        if (isAvailable()){
-            if (isEnough(this.item_quantity)) {
-                return this.item_product.getProductUnitPrice() * this.item_quantity;
-            } else {
-                throw new Exception(
-                        String.format("Cannot order %d %s, only have %d in stock.",
-                                this.item_quantity,
-                                this.item_product.getProductName(),
-                                this.item_product.getProductInventoryCount()
-                                )
-                );
-            }
-        } else {
-            throw new Exception(String.format("Item %s is not available", this.item_product.getProductName()));
-        }
+    public double calculateAmount(){
+        double amount = this.item_product.getProductUnitPrice() * this.item_quantity;
+        this.item_amount = amount;
+        return amount;
+
+//        if (isAvailable()){
+//            if (isEnough(this.item_quantity)) {
+//                return this.item_product.getProductUnitPrice() * this.item_quantity;
+//            }
+//            else {
+//                throw new Exception(
+//                        String.format("Cannot order %d %s, only have %d in stock.",
+//                                this.item_quantity,
+//                                this.item_product.getProductName(),
+//                                this.item_product.getProductInventoryCount()
+//                                )
+//                );
+//            }
+//        } else {
+//            throw new Exception(String.format("Item %s is not available", this.item_product.getProductName()));
+//        }
     }
 
     public double getItemAmount(){
