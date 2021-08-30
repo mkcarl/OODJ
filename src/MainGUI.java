@@ -190,6 +190,21 @@ public class MainGUI extends JFrame{
                 cl.show(parentPanel, "cartPanel");
                 showUpdatedCartTable();
 
+                for (int i = 0; i < ((PurchasableUser) currentUser).getOrder_cart().getOrderItems().size(); i++) {
+                    OrderItem currentOrderItem = ((PurchasableUser) currentUser).getOrder_cart().getOrderItems().get(i);
+                    if (currentOrderItem.getItemProduct().getProductStatus().equals("INACTIVE")){
+                        JOptionPane.showMessageDialog(
+                                null,
+                                String.format(
+                                        "Item (%s) has been discontinued. It will be removed from your cart.",
+                                        currentOrderItem.getItemProduct().getProductName()
+                                ),
+                                "Warning",
+                                JOptionPane.WARNING_MESSAGE);
+                        ((PurchasableUser)currentUser).getOrder_cart().removeItem(i);
+                        showUpdatedCartTable();
+                    }
+                }
             }
         });
         btnCancel_NewCustomer.addActionListener(new ActionListener() {
@@ -448,13 +463,14 @@ public class MainGUI extends JFrame{
             cartModel.insertRow(cartModel.getRowCount(), details);
         }
         showUpdatedCheckOutDetails();
+
     }
 
     private void searchCartTable(){
         cartModel.setRowCount(0);
 
         for (OrderItem oi :
-                ((Customer) currentUser).getOrder_cart().getOrderItems()) {
+                ((PurchasableUser) currentUser).getOrder_cart().getOrderItems()) {
             if(oi.getItemProduct().getProductName().toLowerCase().contains(txtSearch_Cart.getText().toLowerCase())) {
                 Object[] details = {
                         oi.getItemProduct().getProductName(),
