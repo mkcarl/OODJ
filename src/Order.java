@@ -144,6 +144,11 @@ public class Order {
 
         try {
             OrderFile.updateEntry(2, OrderFile.indexOf(this.order_id), this.order_status);
+            for (OrderItem oi :
+                    this.order_items) {
+                Product prod = oi.getItemProduct();
+                ProductFile.updateEntry(5, ProductFile.indexOf(prod.getProductID()), Integer.toString(prod.getProductInventoryCount()-oi.getItemQuantity()));
+            }
         } catch (IOException | RecordNotFoundException e) {
             e.printStackTrace();
         }

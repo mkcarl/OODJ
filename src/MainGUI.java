@@ -150,6 +150,7 @@ public class MainGUI extends JFrame{
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 cl.show(parentPanel, "productListingPanel");
+                showUpdatedProductListingTable();
             }
         });
         btnBack_ManageProduct.addActionListener(new ActionListener() {
