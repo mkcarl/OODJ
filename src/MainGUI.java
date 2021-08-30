@@ -222,7 +222,32 @@ public class MainGUI extends JFrame{
             public void actionPerformed(ActionEvent actionEvent) {
                 if (tblProductListing.getSelectedRow() != -1){
                     int index = tblProductListing.getSelectedRow();
-                    System.out.println(index);
+                    String pid = (String) tblProductListing.getValueAt(index, 0);
+                    boolean alreadyInCart = false;
+                    for (OrderItem oi :
+                            ((PurchasableUser)currentUser).getOrder_cart().getOrderItems()) {
+                        if (oi.getItemProduct().getProductID().equals(pid)){
+                            alreadyInCart = true;
+                            break;
+                        }
+                    }
+                    if (alreadyInCart){
+                        JOptionPane.showMessageDialog(null, "This item is already in cart!", "Warning", JOptionPane.WARNING_MESSAGE);
+
+                    } else {
+                        for (Product prod :
+                                allProducts) {
+                            if (prod.getProductID().equals(pid)) {
+                                ((PurchasableUser) currentUser).getOrder_cart().addItem(prod);
+                                JOptionPane.showMessageDialog(null, "Successfully added to cart!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                            }
+
+                            }
+                    }
+
+
+
+
                 } else {
                     JOptionPane.showMessageDialog(null, "Please select an item to be added to cart!");
                 }
@@ -251,6 +276,47 @@ public class MainGUI extends JFrame{
                 searchCartTable();
             }
         });
+        btnPlusOne.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                int index = tblCart.getSelectedRow();
+                if (index != -1) {
+                OrderItem currentOrderItem = ((PurchasableUser) currentUser).getOrder_cart().getOrderItems().get(index);
+                int currentQuantity = currentOrderItem.getItemQuantity();
+                    if (
+                            currentOrderItem.isEnough(currentQuantity + 1)
+                    ) {
+                        ((PurchasableUser) currentUser).getOrder_cart().getOrderItems().get(index).modifyQuantity(currentQuantity + 1);
+                        ((PurchasableUser) currentUser).getOrder_cart().updateQuantityOf(index, currentQuantity + 1);
+                        showUpdatedCartTable();
+                        tblCart.setRowSelectionInterval(index, index);
+
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "Please select an item!", "Warning", JOptionPane.WARNING_MESSAGE);
+                }
+            }
+        });
+        btnMinusOne.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                int index = tblCart.getSelectedRow();
+                if (index != -1) {
+                OrderItem currentOrderItem = ((PurchasableUser) currentUser).getOrder_cart().getOrderItems().get(index);
+                int currentQuantity = currentOrderItem.getItemQuantity();
+                    if (
+                            currentOrderItem.isEnough(currentQuantity - 1)
+                    ) {
+                        ((PurchasableUser) currentUser).getOrder_cart().getOrderItems().get(index).modifyQuantity(currentQuantity - 1);
+                        ((PurchasableUser) currentUser).getOrder_cart().updateQuantityOf(index, currentQuantity - 1);
+                        showUpdatedCartTable();
+                        tblCart.setRowSelectionInterval(index, index);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "Please select an item!", "Warning", JOptionPane.WARNING_MESSAGE);
+                }
+            }
+        });
     }
 
     public static void main(String[] args) {
@@ -271,7 +337,7 @@ public class MainGUI extends JFrame{
 
     private void createUIComponents() {
         // Product listing page table initialisation
-        Object[] columnNames = {"Product ID", "Name", "Type", "Unit price", "Packaging charge", "Stock available"};
+        Object[] columnNames = {"Product ID", "Name", "Type", "Unit price (RM)", "Packaging charge (RM)", "Stock available"};
         productModel = new DefaultTableModel(0, columnNames.length){
             @Override
             public boolean isCellEditable(int row, int column){
@@ -286,8 +352,10 @@ public class MainGUI extends JFrame{
         tblProductListing.getTableHeader().setFont(
                 tblProductListing.getTableHeader().getFont().deriveFont(Font.BOLD, (float) 16)
         );
+        tblProductListing.getTableHeader().setReorderingAllowed(false);
+
         // Cart page table initialisation
-        columnNames = new Object[]{"Product Name", "Unit price", "Packaging charge", "Quantity", "Sub-total"};
+        columnNames = new Object[]{"Product Name", "Unit price (RM)", "Packaging charge (RM)", "Quantity", "Sub-total"};
         cartModel = new DefaultTableModel(0, columnNames.length){
             @Override
             public boolean isCellEditable(int row, int column){
@@ -302,6 +370,8 @@ public class MainGUI extends JFrame{
         tblCart.getTableHeader().setFont(
                 tblCart.getTableHeader().getFont().deriveFont(Font.BOLD, (float) 16)
         );
+        tblCart.getTableHeader().setReorderingAllowed(false);
+
     }
 
     private void showUpdatedProductListingTable(){
@@ -365,6 +435,7 @@ public class MainGUI extends JFrame{
             };
             cartModel.insertRow(cartModel.getRowCount(), details);
         }
+        showUpdatedCheckOutDetails();
     }
 
     private void searchCartTable(){
@@ -383,7 +454,27 @@ public class MainGUI extends JFrame{
                 cartModel.insertRow(cartModel.getRowCount(), details);
             }
         }
+
+        if (txtSearch_Cart.getText().isEmpty()){
+            btnPlusOne.setEnabled(true);
+            btnMinusOne.setEnabled(true);
+        } else {
+            btnPlusOne.setEnabled(false);
+            btnMinusOne.setEnabled(false);
+        }
     }
 
+    private void showUpdatedCheckOutDetails(){
+        lblOidOutput.setText(((PurchasableUser) currentUser).getOrder_cart().getOrderID());
+        lblGrandTotal.setText(String.format("RM %.2f", ((PurchasableUser) currentUser).getOrder_cart().calculateFinal()));
+        double itemTotal=0, packingTotal=0;
+        for (OrderItem oi :
+                (((PurchasableUser) currentUser).getOrder_cart().getOrderItems())) {
+            itemTotal += oi.getItemProduct().getProductUnitPrice()*oi.getItemQuantity();
+            packingTotal += oi.getItemProduct().getProductPackagingCharge()*oi.getItemQuantity();
+        }
+        lblItemTotalOutput.setText(String.format("RM %.2f", itemTotal));
+        lblSurchargeOutput.setText(String.format("RM %.2f", packingTotal));
+    }
 
 }

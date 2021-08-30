@@ -76,15 +76,8 @@ public class Order {
     public void addItem(Product prod) {
         try {
             ArrayList<String> allPIDs = OrderProductFile.getPIDs(this.order_id);
-            order_items.add(new OrderItem(this.order_id, prod));
-
-            for (OrderItem orderItem :
-                    this.order_items) {
-                String currentPID = orderItem.getItemProduct().getProductID();
-                if (!allPIDs.contains(currentPID)) {
-                    OrderProductFile.addNewOrderProduct(this.order_id, currentPID, 1);
-                }
-            }
+            OrderProductFile.addNewOrderProduct(this.order_id, prod.getProductID(), 1);
+            this.order_items.add(new OrderItem(this.order_id, prod));
 
         } catch (IOException | RecordNotFoundException e) {
             e.printStackTrace();
@@ -175,5 +168,18 @@ public class Order {
 
     public ArrayList<OrderItem> getOrderItems(){
         return this.order_items;
+    }
+
+    public void updateQuantityOf(int orderItemIndex, int newQuantity){
+        try {
+            this.order_items.get(orderItemIndex).modifyQuantity(newQuantity);
+            OrderProductFile.updateEntry(
+                    2,
+                    OrderProductFile.indexOf(this.order_id, this.order_items.get(orderItemIndex).getItemProduct().getProductID()),
+                    Integer.toString(newQuantity)
+            );
+        } catch (IOException | RecordNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 }

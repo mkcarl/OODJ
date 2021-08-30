@@ -213,5 +213,30 @@ public class OrderProductFile extends MyFile {
         return targetIndices;
     }
 
+    /**
+     * @param oid Order ID
+     * @param pid Product ID
+     * @return ArrayList of Integer which corresponds to the specified OrderID
+     */
+    public static int indexOf(String oid, String pid) throws IOException, RecordNotFoundException {
+        ArrayList<ArrayList<String>> allOrderProductsFromFile = OrderProductFile.readAllOrdersProducts();
+        int targetIndex = -1;
+
+        for (int i = 0; i < allOrderProductsFromFile.get(0).size(); i++) {
+            if (
+                    allOrderProductsFromFile.get(0).get(i).equals(oid) &&
+                            allOrderProductsFromFile.get(1).get(i).equals(pid)
+            ){
+                targetIndex = i;
+                break;
+            }
+        }
+        if (targetIndex != -1){
+            return targetIndex;
+        } else {
+            throw new RecordNotFoundException("No such OID and PID pair");
+        }
+    }
+
 
 }
