@@ -360,8 +360,9 @@ public class MainGUI extends JFrame{
                     JOptionPane.showMessageDialog(
                             null,
                             String.format(
-                                    "Paid RM %.2f. Please come again!",
-                                    ((PurchasableUser)currentUser).getOrder_cart().calculateFinal()
+                                    "Paid RM %.2f. Copy of invoice is sent to %s",
+                                    ((PurchasableUser)currentUser).getOrder_cart().calculateFinal(),
+                                    currentUser.user_email
                             ),
                             "Transaction successful",
                             JOptionPane.INFORMATION_MESSAGE

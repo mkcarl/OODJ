@@ -13,12 +13,21 @@ import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.property.TextAlignment;
 import com.itextpdf.layout.property.UnitValue;
 
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
+import javax.mail.*;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Properties;
 
 public abstract class PurchasableUser extends User implements Purchasable {
     private Order order_cart;
@@ -37,7 +46,7 @@ public abstract class PurchasableUser extends User implements Purchasable {
             allOrderFromFile = OrderFile.readAllOrders(); // all the orders
             latestOID = allOrderFromFile.get(0).get(indexOfAllOrderID.get(indexOfAllOrderID.size() - 1)); // get the last order id of this dude
 
-            if (allOrderFromFile.get(2).get(indexOfAllOrderID.get(indexOfAllOrderID.size() - 1)).equals("PENDING")){
+            if (allOrderFromFile.get(2).get(indexOfAllOrderID.get(indexOfAllOrderID.size() - 1)).equals("PENDING")) {
                 this.order_cart = new Order(latestOID);
             } else {
                 throw new RecordNotFoundException();
@@ -65,7 +74,7 @@ public abstract class PurchasableUser extends User implements Purchasable {
         }
     }
 
-    public PurchasableUser (String uid) {
+    public PurchasableUser(String uid) {
         super(uid);
         // if they have a cart, and if the cart is not cheched out, use old cart, or else, give them new cart
 
@@ -79,7 +88,7 @@ public abstract class PurchasableUser extends User implements Purchasable {
             allOrderFromFile = OrderFile.readAllOrders(); // all the orders
             latestOID = allOrderFromFile.get(0).get(indexOfAllOrderID.get(indexOfAllOrderID.size() - 1)); // get the last order id of this dude
 
-            if (allOrderFromFile.get(2).get(indexOfAllOrderID.get(indexOfAllOrderID.size() - 1)).equals("PENDING")){
+            if (allOrderFromFile.get(2).get(indexOfAllOrderID.get(indexOfAllOrderID.size() - 1)).equals("PENDING")) {
                 this.order_cart = new Order(latestOID);
             } else {
                 throw new RecordNotFoundException();
@@ -118,7 +127,7 @@ public abstract class PurchasableUser extends User implements Purchasable {
     public void generateInvoice() {
         String directory = "./MyInvoices";
         File dir = new File(directory);
-        if (dir.mkdir()){
+        if (dir.mkdir()) {
             System.out.println("Created directory ./MyInvoices");
         }
 
@@ -161,7 +170,7 @@ public abstract class PurchasableUser extends User implements Purchasable {
             document.add(
                     new Paragraph("Invoice").setTextAlignment(TextAlignment.CENTER).setFontSize(20).setBold().setUnderline()
             );
-            Table cusomterDetails = new Table(UnitValue.createPercentArray(new float[]{3,1,1,3}));
+            Table cusomterDetails = new Table(UnitValue.createPercentArray(new float[]{3, 1, 1, 3}));
             cusomterDetails.addCell(
                     new Cell().add(
                             new Paragraph("Bill to:")
@@ -186,7 +195,7 @@ public abstract class PurchasableUser extends User implements Purchasable {
                             )
                     ).setBorder(null).setFontSize(8)
             );
-            Table invoiceDetails = new Table(UnitValue.createPercentArray(new float[]{1,2,5,1,3}));
+            Table invoiceDetails = new Table(UnitValue.createPercentArray(new float[]{1, 2, 5, 1, 3}));
             for (int i = 0; i < 5; i++) {
                 invoiceDetails.addCell(new Cell().setBorder(null));
             }
@@ -216,11 +225,11 @@ public abstract class PurchasableUser extends User implements Purchasable {
                     ).setBold().setFontSize(10)
             );
             int counter = 0;
-            double itemTotal=0, packingTotal=0;
+            double itemTotal = 0, packingTotal = 0;
             for (OrderItem oi : this.order_cart.getOrderItems()) {
                 counter++;
-                itemTotal += oi.getItemProduct().getProductUnitPrice()*oi.getItemQuantity();
-                packingTotal += oi.getItemProduct().getProductPackagingCharge()*oi.getItemQuantity();
+                itemTotal += oi.getItemProduct().getProductUnitPrice() * oi.getItemQuantity();
+                packingTotal += oi.getItemProduct().getProductPackagingCharge() * oi.getItemQuantity();
                 invoiceDetails.addCell(
                         new Cell().add(
                                 new Paragraph(Integer.toString(counter))
@@ -251,7 +260,7 @@ public abstract class PurchasableUser extends User implements Purchasable {
                 invoiceDetails.addCell(new Cell().setBorder(null));
             }
             invoiceDetails.addCell(
-                    new Cell(1,2).add(
+                    new Cell(1, 2).add(
                             new Paragraph("Item Total")
                     ).setFontSize(10).setBorder(null).setTextAlignment(TextAlignment.RIGHT)
             );
@@ -264,7 +273,7 @@ public abstract class PurchasableUser extends User implements Purchasable {
                 invoiceDetails.addCell(new Cell().setBorder(null));
             }
             invoiceDetails.addCell(
-                    new Cell(1,2).add(
+                    new Cell(1, 2).add(
                             new Paragraph("Packing Total")
                     ).setFontSize(10).setBorder(null).setTextAlignment(TextAlignment.RIGHT)
             );
@@ -277,7 +286,7 @@ public abstract class PurchasableUser extends User implements Purchasable {
                 invoiceDetails.addCell(new Cell().setBorder(null));
             }
             invoiceDetails.addCell(
-                    new Cell(1,2).add(
+                    new Cell(1, 2).add(
                             new Paragraph("Grand Total")
                     ).setFontSize(12).setBold().setBorder(null).setTextAlignment(TextAlignment.RIGHT)
             );
@@ -290,8 +299,13 @@ public abstract class PurchasableUser extends User implements Purchasable {
             document.add(cusomterDetails);
             document.add(invoiceDetails);
             document.close();
-            // TODO add send email func
-            System.out.println("Done");
+            emailFile(
+                    this.user_email,
+                    String.format("Invoice %s", this.order_cart.getOrderID()),
+                    String.format("Attach is the invoice for Order %s. Please do not reply.", this.order_cart.getOrderID()),
+                    String.format("Invoice_%s.pdf", this.order_cart.getOrderID()),
+                    dest
+                    );
 
 
         } catch (FileNotFoundException e) {
@@ -311,8 +325,52 @@ public abstract class PurchasableUser extends User implements Purchasable {
     public void checkOut(boolean invoice) {
         this.order_cart.checkOutCart();
 
-        if (invoice){
+        if (invoice) {
             generateInvoice();
+        }
+    }
+
+    public void emailFile(String recipientEmail, String header, String body, String fileName, String fileSource) {
+        String email = "leysuinori.trading@gmail.com";
+        String password = "goecismemrjymfld";
+
+        Properties prop = new Properties();
+        prop.put("mail.smtp.host", "smtp.gmail.com");
+        prop.put("mail.smtp.port", "465");
+        prop.put("mail.smtp.auth", "true");
+        prop.put("mail.smtp.socketFactory.port", "465");
+        prop.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+
+        Session session = Session.getInstance(prop,
+                new javax.mail.Authenticator() {
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(email, password);
+                    }
+                });
+
+        try {
+            Message message = new MimeMessage(session);
+            BodyPart msgBody = new MimeBodyPart();
+            msgBody.setText(body);
+            Multipart multipart = new MimeMultipart();
+            multipart.addBodyPart(msgBody);
+            msgBody = new MimeBodyPart();
+            DataSource source = new FileDataSource(fileSource);
+            msgBody.setDataHandler(new DataHandler(source));
+            msgBody.setFileName(fileName);
+            multipart.addBodyPart(msgBody);
+            message.setFrom(new InternetAddress(email));
+            message.setRecipients(
+                    Message.RecipientType.TO,
+                    InternetAddress.parse(recipientEmail)
+            );
+            message.setSubject(header);
+            message.setContent(multipart);
+
+            Transport.send(message);
+
+        } catch (MessagingException e) {
+            e.printStackTrace();
         }
     }
 }
