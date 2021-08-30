@@ -135,7 +135,7 @@ public class UserFile extends MyFile {
      * @param role Role of user
      * @return Auto generated UID based on role and last User ID in Users. txt
      */
-    private static String getUID(String role) throws IOException, RecordNotFoundException {
+    public static String getUID(String role) throws IOException, RecordNotFoundException {
         ArrayList<String> allID = readColumn("uid");
         int intID;
         if (allID.size() != 0) {

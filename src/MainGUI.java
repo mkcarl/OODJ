@@ -1,5 +1,7 @@
 import FileIO.RecordNotFoundException;
 import FileIO.UserFile;
+import com.sun.imageio.plugins.jpeg.JPEGStreamMetadataFormat;
+import jdk.nashorn.internal.runtime.regexp.joni.Regex;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -10,6 +12,8 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.Locale;
 
 /**
@@ -112,6 +116,7 @@ public class MainGUI extends JFrame {
     DefaultTableModel cartModel;
     DefaultTableModel manageCustomerModel;
     DefaultTableModel manageProductModel;
+    ButtonGroup genderGrp;
 
 
     public MainGUI(){
@@ -127,6 +132,9 @@ public class MainGUI extends JFrame {
         parentPanel.add(newCustomerPanel, "newCustomerPanel");
         parentPanel.add(newProductPanel, "newProductPanel");
         parentPanel.add(forgetPasswordPanel, "forgetPasswordPanel");
+        genderGrp = new ButtonGroup();
+        genderGrp.add(maleRadioButton);
+        genderGrp.add(femaleRadioButton);
 
         final CardLayout cl = (CardLayout) parentPanel.getLayout();
         cl.show(parentPanel, "loginPanel");
@@ -146,20 +154,19 @@ public class MainGUI extends JFrame {
                             cl.show(parentPanel, "customerWelcomePanel");
                             System.out.println(getUID + ", " + getPass);
                         }else{
-                            currentUser = new Customer(getUID);
-                            JOptionPane.showMessageDialog(null,"Login Succesful! Welcome Admin !");
+                            currentUser = new Admin(getUID);
+                            JOptionPane.showMessageDialog(null,"Login Successful! Welcome Admin !");
                             cl.show(parentPanel,"adminWelcomePanel");
                             System.out.println(getUID + ", " + getPass);
                         }
+                        txtUsername.setText("");
+                        passPassword.setText("");
                     } else {
-
                         JOptionPane.showMessageDialog(null, "Login Unsuccessful, Please Try Again!");
                         System.out.println("Login Unsuccessful");
                         System.out.println("Details Inputted: " + getUID + ", " + getPass);
                         txtUsername.setText("");
                         passPassword.setText("");
-
-
                     }
 
                 } catch (IOException e) {
@@ -173,6 +180,9 @@ public class MainGUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 cl.show(parentPanel, "loginPanel");
+                currentUser = null;
+
+
             }
         });
         btnCustomer_Admin.addActionListener(new ActionListener() {
@@ -231,6 +241,7 @@ public class MainGUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 cl.show(parentPanel, "loginPanel");
+                currentUser = null;
 
             }
         });
@@ -246,12 +257,27 @@ public class MainGUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 cl.show(parentPanel, "customerPanel");
+                txtUID.setText("");
+                txtPassword.setText("");
+                txtName.setText("");
+                txtEmail.setText("");
+                txtPhoneNumber.setText("");
+                genderGrp.clearSelection();
+                cl.show(parentPanel,"customerPanel");
+
             }
         });
         btnAdd.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 cl.show(parentPanel, "newCustomerPanel");
+                try {
+                    String displayUID  = UserFile.getUID("CUSTOMER");
+                    txtUID.setText(displayUID);
+                    txtUID.setEnabled(false);
+                } catch (IOException | RecordNotFoundException e) {
+                    e.printStackTrace();
+                }
             }
         });
         btnCancel_NewProduct.addActionListener(new ActionListener() {
@@ -330,6 +356,32 @@ public class MainGUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 cl.show(parentPanel, "loginPanel");
+            }
+        });
+        btnSave_NewCustomer.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+
+                String PATTERN = "^[A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9]+)*@" + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+                Pattern pattern = Pattern.compile(PATTERN);
+                Matcher matcher = pattern.matcher(txtEmail.getText());
+                if (matcher.matches()){
+                    setNewCustomer();
+                    JOptionPane.showMessageDialog(null,"New Customer Created!");
+                    txtUID.setText("");
+                    txtPassword.setText("");
+                    txtName.setText("");
+                    txtEmail.setText("");
+                    txtPhoneNumber.setText("");
+                    genderGrp.clearSelection();
+                    cl.show(parentPanel,"customerPanel");
+                    showUpdatedCustomerTable();
+                }else{
+                    JOptionPane.showMessageDialog(null,"Incorrect Email Format!, Please Check and Try Again","WARNING",JOptionPane.WARNING_MESSAGE);
+                    txtEmail.setText("");
+
+
+                }
             }
         });
     }
@@ -586,5 +638,27 @@ public class MainGUI extends JFrame {
 
         }
     }
+
+    private void setNewCustomer(){
+        UserFile newUser = new UserFile();
+        String gender = "";
+        String getPassword = txtPassword.getText();
+        String getName = txtName.getText();
+        String getEmail = txtEmail.getText();
+        String getPhoneNumber = txtPhoneNumber.getText();
+        maleRadioButton.setActionCommand(maleRadioButton.getText());
+        femaleRadioButton.setActionCommand(femaleRadioButton.getText());
+
+        if(femaleRadioButton.isSelected()){
+            gender = "FEMALE";
+        }else{
+            gender = "MALE";
+        }
+
+        UserFile.addNewUser(getPassword,getName,gender,getEmail,getPhoneNumber,"CUSTOMER","ACTIVE");
+
+    }
+
+
 
 }
