@@ -344,6 +344,37 @@ public class MainGUI extends JFrame{
                 }
             }
         });
+        btnCheckout_Cart.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                if (tblCart.getRowCount()==0){
+                    JOptionPane.showMessageDialog(null, "There is nothing to check out!", "Warning", JOptionPane.WARNING_MESSAGE);
+                } else{
+                    String[] buttons = {"Yes", "No"};
+                    int choice = JOptionPane.showOptionDialog(null, "Checking out. Do you want an invoice?", "Confirmation",
+                            JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, buttons, buttons[0]);
+                    if (choice == 0){
+                        // TODO : add invoice code
+                    }
+                    ((PurchasableUser)currentUser).getOrder_cart().checkOutCart();
+                    JOptionPane.showMessageDialog(
+                            null,
+                            String.format(
+                                    "Paid RM %.2f. Please come again!",
+                                    ((PurchasableUser)currentUser).getOrder_cart().calculateFinal()
+                            ),
+                            "Transaction successful",
+                            JOptionPane.INFORMATION_MESSAGE
+                    );
+                    if (currentUser instanceof Admin){
+                        currentUser = new Admin(currentUser.user_id);
+                    } else {
+                        currentUser = new Customer(currentUser.user_id);
+                    }
+                    showUpdatedCartTable();
+                }
+            }
+        });
     }
 
     public static void main(String[] args) {
