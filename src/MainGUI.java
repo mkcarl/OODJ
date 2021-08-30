@@ -354,10 +354,9 @@ public class MainGUI extends JFrame{
                     String[] buttons = {"Yes", "No"};
                     int choice = JOptionPane.showOptionDialog(null, "Checking out. Do you want an invoice?", "Confirmation",
                             JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, buttons, buttons[0]);
-                    if (choice == 0){
-                        // TODO : add invoice code
-                    }
-                    ((PurchasableUser)currentUser).getOrder_cart().checkOutCart();
+
+                    ((PurchasableUser)currentUser).checkOut(choice==0);
+
                     JOptionPane.showMessageDialog(
                             null,
                             String.format(
