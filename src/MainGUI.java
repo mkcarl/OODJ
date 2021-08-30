@@ -317,6 +317,18 @@ public class MainGUI extends JFrame{
                 }
             }
         });
+        btnRemove_Cart.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                int index = tblCart.getSelectedRow();
+                if (index != -1) {
+                    ((PurchasableUser)currentUser).getOrder_cart().removeItem(index);
+                    showUpdatedCartTable();
+                } else {
+                    JOptionPane.showMessageDialog(null, "Please select an item!", "Warning", JOptionPane.WARNING_MESSAGE);
+                }
+            }
+        });
     }
 
     public static void main(String[] args) {

@@ -6,6 +6,7 @@ import FileIO.RecordNotFoundException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Array;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -120,16 +121,10 @@ public class Order {
 
     public void removeItem(int index){
         order_items.remove(index);
-        ArrayList<String> allPIDs = null;
         try {
-            allPIDs = OrderProductFile.getPIDs(this.order_id);
-            for (OrderItem orderItem :
-                    this.order_items) {
-                String currentPID = orderItem.getItemProduct().getProductID();
-                if (!allPIDs.contains(currentPID)) {
-                    OrderProductFile.deleteEntry(OrderProductFile.indicesOf(this.order_id).get(index));
-                }
-            }
+            ArrayList<Integer> allIndicesOfOID = OrderProductFile.indicesOf(this.order_id);
+            int target = allIndicesOfOID.get(index);
+            OrderProductFile.deleteEntry(target);
         } catch (IOException | RecordNotFoundException e) {
             e.printStackTrace();
         }
