@@ -1,3 +1,6 @@
+import FileIO.RecordNotFoundException;
+import FileIO.UserFile;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -5,12 +8,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Locale;
 
 /**
  * @author mkcarl
  */
-public class MainGUI extends JFrame{
+public class MainGUI extends JFrame {
     private JPanel parentPanel;
     private JPanel loginPanel;
     private JLabel lblLogin;
@@ -93,11 +98,21 @@ public class MainGUI extends JFrame{
     private JLabel lblTitle_NewCustomer;
     private JLabel lblTitle_NewProduct;
     private JLabel lblGrandTotal;
+    private JPanel forgetPasswordPanel;
+    private JLabel lblTitle_ResetPassword;
+    private JTextField txtResetCode;
+    private JTextField txtNewPassword;
+    private JButton confirmButton;
+    private JButton backButton;
 
     private User currentUser;
     ArrayList<Product> allProducts;
+    ArrayList<Customer> allCustomer;
     DefaultTableModel productModel;
     DefaultTableModel cartModel;
+    DefaultTableModel manageCustomerModel;
+    DefaultTableModel manageProductModel;
+
 
     public MainGUI(){
         setContentPane(parentPanel);
@@ -111,6 +126,7 @@ public class MainGUI extends JFrame{
         parentPanel.add(customerWelcomePanel, "customerWelcomePanel");
         parentPanel.add(newCustomerPanel, "newCustomerPanel");
         parentPanel.add(newProductPanel, "newProductPanel");
+        parentPanel.add(forgetPasswordPanel, "forgetPasswordPanel");
 
         final CardLayout cl = (CardLayout) parentPanel.getLayout();
         cl.show(parentPanel, "loginPanel");
@@ -118,7 +134,39 @@ public class MainGUI extends JFrame{
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                cl.show(parentPanel, "customerWelcomePanel");
+                String getUID = txtUsername.getText();
+                String getPass = String.valueOf(passPassword.getPassword());
+                System.out.println(getPass);
+
+                try {
+                    if (User.isValid(getUID, getPass)) {
+                        if (User.accountTypeOf(getUID).equals("CUSTOMER")) {
+                            currentUser = new Customer(getUID);
+                            JOptionPane.showMessageDialog(null, "Login Successful! Welcome Customer !");
+                            cl.show(parentPanel, "customerWelcomePanel");
+                            System.out.println(getUID + ", " + getPass);
+                        }else{
+                            currentUser = new Customer(getUID);
+                            JOptionPane.showMessageDialog(null,"Login Succesful! Welcome Admin !");
+                            cl.show(parentPanel,"adminWelcomePanel");
+                            System.out.println(getUID + ", " + getPass);
+                        }
+                    } else {
+
+                        JOptionPane.showMessageDialog(null, "Login Unsuccessful, Please Try Again!");
+                        System.out.println("Login Unsuccessful");
+                        System.out.println("Details Inputted: " + getUID + ", " + getPass);
+                        txtUsername.setText("");
+                        passPassword.setText("");
+
+
+                    }
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    System.out.println("No Input Detected");
+                    JOptionPane.showMessageDialog(null, "Input Fields are empty!, Please Enter Your Login Details and Try Again.");
+                }
             }
         });
         btnLogout_Admin.addActionListener(new ActionListener() {
@@ -131,12 +179,14 @@ public class MainGUI extends JFrame{
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 cl.show(parentPanel, "customerPanel");
+                showUpdatedCustomerTable();
             }
         });
         btnProduct_Admin.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 cl.show(parentPanel, "manageProductPanel");
+                showUpdatedProductTable();
             }
         });
         btnShop_Admin.addActionListener(new ActionListener() {
@@ -220,7 +270,7 @@ public class MainGUI extends JFrame{
         btnAddToCart_ProductListing.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                if (tblProductListing.getSelectedRow() != -1){
+                if (tblProductListing.getSelectedRow() != -1) {
                     int index = tblProductListing.getSelectedRow();
                     System.out.println(index);
                 } else {
@@ -238,17 +288,48 @@ public class MainGUI extends JFrame{
         });
         txtSearch_ProductListing.addKeyListener(new KeyAdapter() {
         });
-        loginButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                currentUser = new Customer("C000001");
-            }
-        });
+
         txtSearch_Cart.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent keyEvent) {
                 super.keyReleased(keyEvent);
                 searchCartTable();
+            }
+        });
+        forgotPasswordButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                cl.show(parentPanel, "forgetPasswordPanel");
+            }
+        });
+        confirmButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                String resetCode = txtResetCode.getText();
+                String newPw = txtNewPassword.getText();
+                String getUID = txtUsername.getText();
+                User.resetPassword(getUID, resetCode, newPw);
+            }
+        });
+        txtSearch_ManageCustomer.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent keyEvent) {
+                super.keyReleased(keyEvent);
+                searchCustomer();
+
+            }
+        });
+        txtSearch_ManageProduct.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent keyEvent) {
+                super.keyReleased(keyEvent);
+                searchProduct();
+            }
+        });
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                cl.show(parentPanel, "loginPanel");
             }
         });
     }
@@ -272,9 +353,9 @@ public class MainGUI extends JFrame{
     private void createUIComponents() {
         // Product listing page table initialisation
         Object[] columnNames = {"Product ID", "Name", "Type", "Unit price", "Packaging charge", "Stock available"};
-        productModel = new DefaultTableModel(0, columnNames.length){
+        productModel = new DefaultTableModel(0, columnNames.length) {
             @Override
-            public boolean isCellEditable(int row, int column){
+            public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
@@ -282,15 +363,15 @@ public class MainGUI extends JFrame{
         tblProductListing = new JTable(productModel);
         tblProductListing.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tblProductListing.setFont(tblProductListing.getFont().deriveFont((float) 16));
-        tblProductListing.setRowHeight(tblProductListing.getRowHeight()+8);
+        tblProductListing.setRowHeight(tblProductListing.getRowHeight() + 8);
         tblProductListing.getTableHeader().setFont(
                 tblProductListing.getTableHeader().getFont().deriveFont(Font.BOLD, (float) 16)
         );
         // Cart page table initialisation
         columnNames = new Object[]{"Product Name", "Unit price", "Packaging charge", "Quantity", "Sub-total"};
-        cartModel = new DefaultTableModel(0, columnNames.length){
+        cartModel = new DefaultTableModel(0, columnNames.length) {
             @Override
-            public boolean isCellEditable(int row, int column){
+            public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
@@ -298,13 +379,45 @@ public class MainGUI extends JFrame{
         tblCart = new JTable(cartModel);
         tblCart.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tblCart.setFont(tblCart.getFont().deriveFont((float) 16));
-        tblCart.setRowHeight(tblCart.getRowHeight()+8);
+        tblCart.setRowHeight(tblCart.getRowHeight() + 8);
         tblCart.getTableHeader().setFont(
                 tblCart.getTableHeader().getFont().deriveFont(Font.BOLD, (float) 16)
         );
+        // Manage Customer page table initialisation
+        columnNames = new Object[]{"User ID", "User Password", "User Name", "Gender", "Email", "Phone Number"};
+        manageCustomerModel = new DefaultTableModel(0, columnNames.length) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        manageCustomerModel.setColumnIdentifiers(columnNames);
+        tblCustomer = new JTable(manageCustomerModel);
+        tblCustomer.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        tblCustomer.setFont(tblCustomer.getFont().deriveFont((float) 16));
+        tblCustomer.setRowHeight(tblCustomer.getRowHeight() + 8);
+        tblCustomer.getTableHeader().setFont(
+                tblCustomer.getTableHeader().getFont().deriveFont(Font.BOLD, (float) 16)
+        );
+        // Manage Product table initialisation
+        columnNames = new Object[]{"Product ID", "Product Name", "Product Type", "Unit Price", "Packaging Charge", "Inventory Count"};
+        manageProductModel = new DefaultTableModel(0, columnNames.length) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        manageProductModel.setColumnIdentifiers(columnNames);
+        tblManageProduct = new JTable(manageProductModel);
+        tblManageProduct.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        tblManageProduct.setFont(tblManageProduct.getFont().deriveFont((float) 16));
+        tblManageProduct.setRowHeight(tblManageProduct.getRowHeight() + 8);
+        tblManageProduct.getTableHeader().setFont(
+                tblManageProduct.getTableHeader().getFont().deriveFont(Font.BOLD, (float) 16)
+        );
     }
 
-    private void showUpdatedProductListingTable(){
+    private void showUpdatedProductListingTable() {
         productModel.setRowCount(0); // clear all rows
         txtSearch_ProductListing.setText(""); // clear search box
 
@@ -313,7 +426,7 @@ public class MainGUI extends JFrame{
         // display all products if active and have stock
         for (Product prod :
                 allProducts) {
-            if (prod.getProductStatus().equals("ACTIVE") && prod.getProductInventoryCount() > 0){
+            if (prod.getProductStatus().equals("ACTIVE") && prod.getProductInventoryCount() > 0) {
                 Object[] details = {
                         prod.getProductID(),
                         prod.getProductName(),
@@ -327,7 +440,7 @@ public class MainGUI extends JFrame{
         }
     }
 
-    private void searchProductListingTable(){
+    private void searchProductListingTable() {
         productModel.setRowCount(0); // clear all rows
 
         for (Product prod :
@@ -350,7 +463,7 @@ public class MainGUI extends JFrame{
         }
     }
 
-    private void showUpdatedCartTable(){
+    private void showUpdatedCartTable() {
         cartModel.setRowCount(0);
         txtSearch_Cart.setText("");
 
@@ -367,12 +480,12 @@ public class MainGUI extends JFrame{
         }
     }
 
-    private void searchCartTable(){
+    private void searchCartTable() {
         cartModel.setRowCount(0);
 
         for (OrderItem oi :
                 ((Customer) currentUser).getOrder_cart().getOrderItems()) {
-            if(oi.getItemProduct().getProductName().toLowerCase().contains(txtSearch_Cart.getText().toLowerCase())) {
+            if (oi.getItemProduct().getProductName().toLowerCase().contains(txtSearch_Cart.getText().toLowerCase())) {
                 Object[] details = {
                         oi.getItemProduct().getProductName(),
                         oi.getItemProduct().getProductUnitPrice(),
@@ -385,5 +498,93 @@ public class MainGUI extends JFrame{
         }
     }
 
+
+    private void showUpdatedCustomerTable() {
+        manageCustomerModel.setRowCount(0);
+        txtSearch_ManageCustomer.setText("");
+        allCustomer = Customer.readAllCustomer();
+
+        for (Customer cust :
+                allCustomer) {
+            if (cust.getUser_status().equals("ACTIVE")) {
+                Object[] customerList = {
+                        cust.getUser_id(),
+                        cust.getUser_password(),
+                        cust.getUser_name(),
+                        cust.getUser_gender(),
+                        cust.getUser_email(),
+                        cust.getUser_phone_number(),
+                        cust.getUser_status()
+                };
+                manageCustomerModel.insertRow(manageCustomerModel.getRowCount(), customerList);
+            }
+        }
+
+    }
+
+
+    private void showUpdatedProductTable(){
+        manageProductModel.setRowCount(0);
+        txtSearch_ManageProduct.setText("");
+        allProducts = Product.readAllProduct();
+
+        for (Product prod :
+                allProducts) {
+            if (prod.getProductStatus().equals("ACTIVE")) {
+                Object[] productList = {
+                        prod.getProductID(),
+                        prod.getProductName(),
+                        prod.getProductType(),
+                        prod.getProductUnitPrice(),
+                        prod.getProductPackagingCharge(),
+                        prod.getProductInventoryCount(),
+                        prod.getProductStatus()
+                };
+                manageProductModel.insertRow(manageProductModel.getRowCount(),productList);
+            }
+            }
+    }
+
+    private void searchCustomer(){
+        manageCustomerModel.setRowCount(0);
+        for (Customer cust :
+                allCustomer) {
+            if (cust.getUser_name().toLowerCase().contains(txtSearch_ManageCustomer.getText().toLowerCase())
+                && cust.getUser_status().equals("ACTIVE"))
+                {   Object[] customerList = {
+                        cust.getUser_id(),
+                        cust.getUser_password(),
+                        cust.getUser_name(),
+                        cust.getUser_gender(),
+                        cust.getUser_email(),
+                        cust.getUser_phone_number(),
+                        cust.getUser_status()
+                };
+                    manageCustomerModel.insertRow(manageCustomerModel.getRowCount(), customerList);
+                }
+            }
+    }
+
+    private void searchProduct(){
+        manageProductModel.setRowCount(0);
+        for (Product prod :
+                allProducts) {
+            if (prod.getProductName().toLowerCase().contains(txtSearch_ManageProduct.getText().toLowerCase())
+                && prod.getProductStatus().equals("ACTIVE")
+                && prod.getProductInventoryCount() > 0){
+                Object[] productList = {
+                        prod.getProductID(),
+                        prod.getProductName(),
+                        prod.getProductType(),
+                        prod.getProductUnitPrice(),
+                        prod.getProductPackagingCharge(),
+                        prod.getProductInventoryCount(),
+                        prod.getProductStatus()
+                };
+                manageProductModel.insertRow(manageProductModel.getRowCount(), productList);
+            }
+
+        }
+    }
 
 }

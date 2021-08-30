@@ -129,9 +129,9 @@ public class ProductFile extends MyFile {
     }
 
     /**
-     * @return Auto generated PID based on the last Product ID in Products. txt
+     * @return Auto generated NEW PID based on the last Product ID in Products. txt
      */
-    private static String getPID() throws IOException, RecordNotFoundException {
+    public static String getPID() throws IOException, RecordNotFoundException {
         ArrayList<String> allID = readColumn("pid");
         int intID;
         if (allID.size() != 0) {

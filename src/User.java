@@ -122,15 +122,15 @@ public abstract class User {
         try{
             ArrayList<ArrayList<String>> allUserFromFile = UserFile.readAllUsers();
             int unumber = allUserFromFile.get(0).indexOf(uid);
-            user_id = allUserFromFile.get(0).get(unumber);
-            user_password = allUserFromFile.get(1).get(unumber);
+            if (unumber != -1) {
+                user_id = allUserFromFile.get(0).get(unumber);
+                user_password = allUserFromFile.get(1).get(unumber);
 
-            if (UserFile.userExist(uid)){
-                if (user_id.equals(uid)){
-                    if (user_password.equals(pw)){
-                        return check = true;
-                    }else{
-                        return check = false;
+                if (UserFile.userExist(uid)) {
+                    if (user_id.equals(uid)) {
+                        if (user_password.equals(pw)) {
+                            check = true;
+                        }
                     }
                 }
             }
@@ -159,6 +159,10 @@ public abstract class User {
             e.printStackTrace();
         }
         return role;
+    }
+
+    public String getUser_status() {
+        return user_status;
     }
 
     public static void resetPassword(String user_id, String resetCode, String newPw){
