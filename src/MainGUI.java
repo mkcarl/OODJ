@@ -1,3 +1,4 @@
+import FileIO.ProductFile;
 import FileIO.RecordNotFoundException;
 import FileIO.UserFile;
 import com.sun.imageio.plugins.jpeg.JPEGStreamMetadataFormat;
@@ -108,6 +109,8 @@ public class MainGUI extends JFrame {
     private JTextField txtNewPassword;
     private JButton confirmButton;
     private JButton backButton;
+    private JRadioButton fragileRadioButton;
+    private JRadioButton nonFragileRadioButton;
 
     private User currentUser;
     ArrayList<Product> allProducts;
@@ -117,6 +120,7 @@ public class MainGUI extends JFrame {
     DefaultTableModel manageCustomerModel;
     DefaultTableModel manageProductModel;
     ButtonGroup genderGrp;
+    ButtonGroup prodTypeGrp;
 
 
     public MainGUI(){
@@ -135,6 +139,9 @@ public class MainGUI extends JFrame {
         genderGrp = new ButtonGroup();
         genderGrp.add(maleRadioButton);
         genderGrp.add(femaleRadioButton);
+        prodTypeGrp = new ButtonGroup();
+        prodTypeGrp.add(fragileRadioButton);
+        prodTypeGrp.add(nonFragileRadioButton);
 
         final CardLayout cl = (CardLayout) parentPanel.getLayout();
         cl.show(parentPanel, "loginPanel");
@@ -265,6 +272,7 @@ public class MainGUI extends JFrame {
                 genderGrp.clearSelection();
                 cl.show(parentPanel,"customerPanel");
 
+
             }
         });
         btnAdd.addActionListener(new ActionListener() {
@@ -284,6 +292,14 @@ public class MainGUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 cl.show(parentPanel, "manageProductPanel");
+                txtPID.setText("");
+                txtItemName.setText("");
+                txtUnitPrice.setText("");
+                txtInventoryCount.setText("");
+                txtPackagingCharge.setText("");
+                prodTypeGrp.clearSelection();
+                cl.show(parentPanel,"manageProductPanel");
+                showUpdatedProductTable();
 
             }
         });
@@ -291,6 +307,19 @@ public class MainGUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 cl.show(parentPanel, "newProductPanel");
+                try {
+                    String displayPID = ProductFile.getPID();
+                    txtPID.setText(displayPID);
+                    txtPID.setEnabled(false);
+                    txtPackagingCharge.setEnabled(false);
+/*                    if (fragileRadioButton.isSelected()){
+                        txtPackagingCharge.setText("1.5");
+                    }else{
+                        txtPackagingCharge.setText("0.5");
+                    }*/
+                } catch (IOException | RecordNotFoundException e) {
+                    e.printStackTrace();
+                }
             }
         });
         btnAddToCart_ProductListing.addActionListener(new ActionListener() {
@@ -379,9 +408,57 @@ public class MainGUI extends JFrame {
                 }else{
                     JOptionPane.showMessageDialog(null,"Incorrect Email Format!, Please Check and Try Again","WARNING",JOptionPane.WARNING_MESSAGE);
                     txtEmail.setText("");
-
-
                 }
+            }
+        });
+        btnEdit_ManageCustomer.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                lblTitle_NewCustomer.setText("Edit Customer");
+                cl.show(parentPanel,"newCustomerPanel");
+
+
+            }
+        });
+        btnSave_NewProduct.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                setNewProduct();
+                JOptionPane.showMessageDialog(null, "New Product Created!");
+                txtPID.setText("");
+                txtItemName.setText("");
+                txtUnitPrice.setText("");
+                txtInventoryCount.setText("");
+                txtPackagingCharge.setText("");
+                prodTypeGrp.clearSelection();
+                cl.show(parentPanel,"manageProductPanel");
+                showUpdatedProductTable();
+            }
+        });
+        ActionListener listener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                if(fragileRadioButton.isSelected()){
+                    txtPackagingCharge.setText("1.5");
+                }else{
+                    txtPackagingCharge.setText("0.5");
+                }
+            }
+        };
+
+        btnEdit_ManageProduct.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                lblTitle_NewProduct.setText("Edit Product");
+                cl.show(parentPanel,"manageProductPanel");
+
+
+            }
+        });
+        btnDelete_ManageProduct.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+
             }
         });
     }
@@ -657,6 +734,28 @@ public class MainGUI extends JFrame {
 
         UserFile.addNewUser(getPassword,getName,gender,getEmail,getPhoneNumber,"CUSTOMER","ACTIVE");
 
+    }
+
+    private void setNewProduct(){
+        ProductFile newProduct = new ProductFile();
+        String getItemName = txtItemName.getText();
+        String ptype = "";
+        double getUnitPrice = Double.parseDouble(txtUnitPrice.getText());
+        double packagingCharge;
+        int getInventoryCount = Integer.parseInt(txtInventoryCount.getText());
+        String status = "";
+        fragileRadioButton.setActionCommand(fragileRadioButton.getText());
+        nonFragileRadioButton.setActionCommand(nonFragileRadioButton.getText());
+
+        if(fragileRadioButton.isSelected()){
+            ptype = "FRAGILE";
+            packagingCharge = 1.5;
+        }else{
+            ptype = "NOT_FRAGILE";
+            packagingCharge = 0.5;
+        }
+        status = "ACTIVE";
+        ProductFile.addNewProduct(getItemName,ptype,getUnitPrice,packagingCharge,getInventoryCount,status);
     }
 
 

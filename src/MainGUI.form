@@ -1089,15 +1089,16 @@
               <grid row="3" column="4" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
           </hspacer>
-          <component id="5830b" class="javax.swing.JRadioButton" default-binding="true">
+          <component id="5830b" class="javax.swing.JRadioButton" binding="fragileRadioButton">
             <constraints>
               <grid row="5" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
+              <selected value="false"/>
               <text value="Fragile"/>
             </properties>
           </component>
-          <component id="8e627" class="javax.swing.JRadioButton" default-binding="true">
+          <component id="8e627" class="javax.swing.JRadioButton" binding="nonFragileRadioButton">
             <constraints>
               <grid row="5" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
