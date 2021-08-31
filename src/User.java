@@ -60,6 +60,11 @@ public abstract class User {
 
     public void setUser_password(String user_password) {
         this.user_password = user_password;
+        try {
+            UserFile.updateEntry(1, UserFile.indexOf(this.user_id), user_password);
+        } catch (IOException | RecordNotFoundException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -177,4 +182,19 @@ public abstract class User {
         }
 
     }
+    public static boolean isActive(String uid){
+        String user_status = "";
+        try{
+            ArrayList<ArrayList<String>> allUserFromFile = UserFile.readAllUsers();
+            int unumber = allUserFromFile.get(0).indexOf(uid);
+            if (unumber != -1) {
+                user_status = allUserFromFile.get(7).get(unumber);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return user_status.equals("ACTIVE");
+    }
+
 }

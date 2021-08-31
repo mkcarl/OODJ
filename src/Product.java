@@ -51,8 +51,8 @@ public class Product {
     public static void deleteProduct(String productID){
         try {
             int productRowNum = ProductFile.indexOf(productID);
-            if (ProductFile.readColumn("ustatus").get(productRowNum).equals("INACTIVE")) {
-                ProductFile.updateEntry(7, productRowNum, "INACTIVE");
+            if (ProductFile.readColumn("pstatus").get(productRowNum).equals("ACTIVE")) {
+                ProductFile.updateEntry(6, productRowNum, "INACTIVE");
             }
         } catch (IOException | RecordNotFoundException e) {
             e.printStackTrace();
@@ -152,7 +152,7 @@ public class Product {
         this.product_type = type;
 
         if (this.product_type.equals("FRAGILE")){
-            setProductPackagingCharge(2);
+            setProductPackagingCharge(1.5);
         } else {
             setProductPackagingCharge(0.5);
         }

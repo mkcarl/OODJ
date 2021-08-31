@@ -157,14 +157,22 @@ public class MainGUI extends JFrame {
                     if (User.isValid(getUID, getPass)) {
                         if (User.accountTypeOf(getUID).equals("CUSTOMER")) {
                             currentUser = new Customer(getUID);
+                            if (User.isActive(getUID)){
                             JOptionPane.showMessageDialog(null, "Login Successful! Welcome Customer !");
                             cl.show(parentPanel, "customerWelcomePanel");
                             System.out.println(getUID + ", " + getPass);
+                            }else{
+                                JOptionPane.showMessageDialog(null,"Inactive User! Try Again");
+                            }
                         }else{
                             currentUser = new Admin(getUID);
+                            if(User.isActive(getUID)){
                             JOptionPane.showMessageDialog(null,"Login Successful! Welcome Admin !");
                             cl.show(parentPanel,"adminWelcomePanel");
                             System.out.println(getUID + ", " + getPass);
+                            }else {
+                                JOptionPane.showMessageDialog(null, "Inactive User! Try Again");
+                            }
                         }
                         txtUsername.setText("");
                         passPassword.setText("");
@@ -228,7 +236,12 @@ public class MainGUI extends JFrame {
         btnBack_ProductListing.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                cl.show(parentPanel, "adminWelcomePanel");
+                if(currentUser instanceof Customer){
+                    cl.show(parentPanel, "customerWelcomePanel");
+
+                }else if (currentUser instanceof Admin){
+                    cl.show(parentPanel, "adminWelcomePanel");
+                }
             }
         });
         btnBack_ManageCustomer.addActionListener(new ActionListener() {
@@ -278,11 +291,14 @@ public class MainGUI extends JFrame {
         btnAdd.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
+                lblTitle_NewCustomer.setText("New Customer");
                 cl.show(parentPanel, "newCustomerPanel");
                 try {
                     String displayUID  = UserFile.getUID("CUSTOMER");
                     txtUID.setText(displayUID);
                     txtUID.setEnabled(false);
+                    femaleRadioButton.setEnabled(true);
+                    maleRadioButton.setEnabled(true);
                 } catch (IOException | RecordNotFoundException e) {
                     e.printStackTrace();
                 }
@@ -306,17 +322,16 @@ public class MainGUI extends JFrame {
         btnAdd_ManageProduct.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
+                lblTitle_NewProduct.setText("New Product");
                 cl.show(parentPanel, "newProductPanel");
                 try {
                     String displayPID = ProductFile.getPID();
                     txtPID.setText(displayPID);
                     txtPID.setEnabled(false);
                     txtPackagingCharge.setEnabled(false);
-/*                    if (fragileRadioButton.isSelected()){
-                        txtPackagingCharge.setText("1.5");
-                    }else{
-                        txtPackagingCharge.setText("0.5");
-                    }*/
+                    fragileRadioButton.setEnabled(true);
+                    nonFragileRadioButton.setEnabled(true);
+
                 } catch (IOException | RecordNotFoundException e) {
                     e.printStackTrace();
                 }
@@ -354,7 +369,14 @@ public class MainGUI extends JFrame {
         forgotPasswordButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                cl.show(parentPanel, "forgetPasswordPanel");
+                try {
+                    if(UserFile.userExist(txtUsername.getText())) {
+                        cl.show(parentPanel, "forgetPasswordPanel");
+                    }
+
+                } catch (RecordNotFoundException | IOException e) {
+                    JOptionPane.showMessageDialog(null,"User ID invalid, Please Check and Try Again");
+                }
             }
         });
         confirmButton.addActionListener(new ActionListener() {
@@ -390,13 +412,20 @@ public class MainGUI extends JFrame {
         btnSave_NewCustomer.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-
                 String PATTERN = "^[A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9]+)*@" + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
                 Pattern pattern = Pattern.compile(PATTERN);
                 Matcher matcher = pattern.matcher(txtEmail.getText());
                 if (matcher.matches()){
-                    setNewCustomer();
-                    JOptionPane.showMessageDialog(null,"New Customer Created!");
+                    if(lblTitle_NewCustomer.getText().contains("Edit")){
+                        JOptionPane.showMessageDialog(null,"User Details have been updated!");
+                        editCustomer();
+
+
+                    }else if (lblTitle_NewCustomer.getText().contains("New")){
+                        setNewCustomer();
+                        JOptionPane.showMessageDialog(null,"New Customer Created!");
+
+                    }
                     txtUID.setText("");
                     txtPassword.setText("");
                     txtName.setText("");
@@ -409,22 +438,53 @@ public class MainGUI extends JFrame {
                     JOptionPane.showMessageDialog(null,"Incorrect Email Format!, Please Check and Try Again","WARNING",JOptionPane.WARNING_MESSAGE);
                     txtEmail.setText("");
                 }
+
             }
         });
         btnEdit_ManageCustomer.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
+                maleRadioButton.setEnabled(false);
+                femaleRadioButton.setEnabled(false);
+                int index = tblCustomer.getSelectedRow();
+                if (index!=-1){
+                    txtUID.setEnabled(false);
+                    String uid = (String)tblCustomer.getValueAt(index,0);
+                    txtUID.setText(uid);
+                    String userName = (String)tblCustomer.getValueAt(index,2);
+                    txtName.setText(userName);
+                    String password = (String)tblCustomer.getValueAt(index,1);
+                    txtPassword.setText(password);
+                    String gender = (String)tblCustomer.getValueAt(index,3);
+                    if(gender.equals("MALE")){
+                        maleRadioButton.doClick();
+                    }else if (gender.equals("FEMALE")){
+                        femaleRadioButton.doClick();
+                    }
+                    String email = (String)tblCustomer.getValueAt(index,4);
+                    txtEmail.setText(email);
+                    String phoneNo = (String)tblCustomer.getValueAt(index,5);
+                    txtPhoneNumber.setText(phoneNo);
+
+
+                }
                 lblTitle_NewCustomer.setText("Edit Customer");
                 cl.show(parentPanel,"newCustomerPanel");
-
 
             }
         });
         btnSave_NewProduct.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                setNewProduct();
-                JOptionPane.showMessageDialog(null, "New Product Created!");
+
+                if (lblTitle_NewProduct.getText().contains("Edit")) {
+                    JOptionPane.showMessageDialog(null, "Product Has Been Edited!");
+                    editProduct();
+
+                } else if (lblTitle_NewProduct.getText().contains("New")) {
+                    JOptionPane.showMessageDialog(null, "New Product Created!");
+                    setNewProduct();
+                }
                 txtPID.setText("");
                 txtItemName.setText("");
                 txtUnitPrice.setText("");
@@ -440,17 +500,52 @@ public class MainGUI extends JFrame {
             public void actionPerformed(ActionEvent actionEvent) {
                 if(fragileRadioButton.isSelected()){
                     txtPackagingCharge.setText("1.5");
-                }else{
+                }else if(nonFragileRadioButton.isSelected()){
                     txtPackagingCharge.setText("0.5");
                 }
             }
+
         };
+                fragileRadioButton.addActionListener(listener);
+                nonFragileRadioButton.addActionListener(listener);
 
         btnEdit_ManageProduct.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                lblTitle_NewProduct.setText("Edit Product");
-                cl.show(parentPanel,"manageProductPanel");
+                int index = tblManageProduct.getSelectedRow();
+                if (index != -1){
+                    txtPID.setEnabled(false);
+                    txtPackagingCharge.setEnabled(false);
+                    String pid = (String)tblManageProduct.getValueAt(index,0);
+                    txtPID.setText(pid);
+                    String itemName = (String)tblManageProduct.getValueAt(index,1);
+                    txtItemName.setText(itemName);
+                    String unitPrice = Double.toString((Double)tblManageProduct.getValueAt(index,3));
+                    txtUnitPrice.setText(unitPrice);
+                    String inventoryCount = Integer.toString((Integer)tblManageProduct.getValueAt(index,5));
+                    txtInventoryCount.setText(inventoryCount);
+                    String ptype = (String)tblManageProduct.getValueAt(index,2);
+                    if(ptype.equals("FRAGILE")){
+                        fragileRadioButton.doClick();
+                    }else if (ptype.equals("NOT_FRAGILE")){
+                        nonFragileRadioButton.doClick();
+                    }
+                    String pkgCharge = Double.toString((Double)tblManageProduct.getValueAt(index,4));
+                    txtPackagingCharge.setText(pkgCharge);
+
+
+
+//                    fragileRadioButton.setActionCommand(fragileRadioButton.getText());
+//                    nonFragileRadioButton.setActionCommand(nonFragileRadioButton.getText());
+
+
+
+                    lblTitle_NewProduct.setText("Edit Product");
+                    cl.show(parentPanel,"newProductPanel");
+                }else{
+                    JOptionPane.showMessageDialog(null,"Please Select an Item","Warning",JOptionPane.WARNING_MESSAGE);
+                }
+
 
 
             }
@@ -458,7 +553,27 @@ public class MainGUI extends JFrame {
         btnDelete_ManageProduct.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
+                int index = tblManageProduct.getSelectedRow();
+                if (index != -1) {
+                    String col = (String) tblManageProduct.getValueAt(index, 0);
+                    //String col = Integer.toString((Integer)tblManageProduct.getValueAt(index, 0));
+                    Product.deleteProduct(col);
+                    JOptionPane.showMessageDialog(null, "Product Deleted !");
+                    showUpdatedProductTable();
+                }
 
+            }
+        });
+        btnDelete_ManageCustomer.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                int index = tblCustomer.getSelectedRow();
+                if (index != -1){
+                    String col = (String)tblCustomer.getValueAt(index,0);
+                    Customer.deleteCustomer(col);
+                    JOptionPane.showMessageDialog(null,"Customer Deleted !");
+                    showUpdatedCustomerTable();
+                }
             }
         });
     }
@@ -671,7 +786,7 @@ public class MainGUI extends JFrame {
                 };
                 manageProductModel.insertRow(manageProductModel.getRowCount(),productList);
             }
-            }
+        }
     }
 
     private void searchCustomer(){
@@ -741,7 +856,7 @@ public class MainGUI extends JFrame {
         String getItemName = txtItemName.getText();
         String ptype = "";
         double getUnitPrice = Double.parseDouble(txtUnitPrice.getText());
-        double packagingCharge;
+        double packagingCharge = Double.parseDouble(txtPackagingCharge.getText());
         int getInventoryCount = Integer.parseInt(txtInventoryCount.getText());
         String status = "";
         fragileRadioButton.setActionCommand(fragileRadioButton.getText());
@@ -749,13 +864,54 @@ public class MainGUI extends JFrame {
 
         if(fragileRadioButton.isSelected()){
             ptype = "FRAGILE";
-            packagingCharge = 1.5;
         }else{
             ptype = "NOT_FRAGILE";
-            packagingCharge = 0.5;
+
         }
         status = "ACTIVE";
         ProductFile.addNewProduct(getItemName,ptype,getUnitPrice,packagingCharge,getInventoryCount,status);
+    }
+
+    private void editProduct(){
+        int index = tblManageProduct.getSelectedRow();
+        if (index!=-1){
+            String pid = (String)tblManageProduct.getValueAt(index,0);
+            for (Product prod :
+                    allProducts) {
+                if (pid.equals(prod.getProductID())) {
+                    prod.setProductName(txtItemName.getText());
+                    prod.setProductType(
+                            fragileRadioButton.isSelected() ? "FRAGILE":
+                                    nonFragileRadioButton.isSelected() ? "NOT_FRAGILE":""
+                    );
+                    prod.setProductUnitPrice(Double.parseDouble(txtUnitPrice.getText()));
+                    prod.setInventoryCount(Integer.parseInt(txtInventoryCount.getText()));
+
+
+
+                }
+            }
+        }
+
+
+
+    }
+
+    private void editCustomer(){
+        int index = tblCustomer.getSelectedRow();
+        if (index != -1){
+            String uid = (String)tblCustomer.getValueAt(index,0);
+            for (Customer customer:
+                 allCustomer) {
+                if (uid.equals(customer.getUser_id())){
+                    customer.setUser_password(txtPassword.getText());
+                    customer.setUser_name(txtName.getText());
+                    customer.setUser_email(txtEmail.getText());
+                    customer.setUser_phone_number(txtPhoneNumber.getText());
+                }
+
+            }
+        }
     }
 
 
