@@ -91,22 +91,20 @@ public class Order {
     }
 
 
-    public static ArrayList<Order> readAllOrderOf(String UID) {
+    public static ArrayList<Order> readAllOrder() {
         ArrayList<ArrayList<String>> allOrders = null;
         ArrayList<Order> target = new ArrayList<>();
         try {
             allOrders = OrderFile.readAllOrders();
             int numOfEntries = allOrders.get(0).size();
             for (int i = 0; i < numOfEntries; i++) {
-                if (allOrders.get(0).get(i).equals(UID)) {
-                    target.add(
-                            new Order(
-                                    allOrders.get(0).get(i),
-                                    new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(allOrders.get(1).get(i)),
-                                    allOrders.get(2).get(i)
-                            )
-                    );
-                }
+                target.add(
+                        new Order(
+                                allOrders.get(0).get(i),
+                                new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(allOrders.get(1).get(i)),
+                                allOrders.get(2).get(i)
+                        )
+                );
             }
         } catch (FileNotFoundException|ParseException e) {
             e.printStackTrace();

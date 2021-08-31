@@ -5,6 +5,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -282,7 +284,7 @@ public class MainGUI extends JFrame{
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                currentUser = new Customer("C000001");
+                currentUser = new Admin("A000002");
             }
         });
         txtSearch_Cart.addKeyListener(new KeyAdapter() {
@@ -398,6 +400,28 @@ public class MainGUI extends JFrame{
                 }
             }
         });
+        btnGenerateReport_Admin.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                String[] buttons = {"Yes","No"};
+                int choice = JOptionPane.showOptionDialog(null, "Create a sales report for the last 30 days?", "Confirmation",
+                        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, buttons, buttons[0]);
+
+                if (choice == 0) {
+                    String pdfDir = ((Admin) currentUser).generateReport();
+                    JOptionPane.showMessageDialog(null, "Report generated", "Information", JOptionPane.INFORMATION_MESSAGE);
+                    if (Desktop.isDesktopSupported()) {
+                        try {
+                            File myFile = new File(pdfDir);
+                            Desktop.getDesktop().open(myFile);
+                        } catch (IOException ex) {
+                            // no application registered for PDFs
+                        }
+                    }
+
+                }
+            }
+        });
     }
 
     public static void main(String[] args) {
@@ -506,7 +530,7 @@ public class MainGUI extends JFrame{
         txtSearch_Cart.setText("");
 
         for (OrderItem oi :
-                ((Customer) currentUser).getOrder_cart().getOrderItems()) {
+                ((PurchasableUser) currentUser).getOrder_cart().getOrderItems()) {
             Object[] details = {
                     oi.getItemProduct().getProductName(),
                     oi.getItemProduct().getProductUnitPrice(),
