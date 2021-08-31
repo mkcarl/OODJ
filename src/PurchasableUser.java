@@ -6,10 +6,7 @@ import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
-import com.itextpdf.layout.element.Cell;
-import com.itextpdf.layout.element.Image;
-import com.itextpdf.layout.element.Paragraph;
-import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.element.*;
 import com.itextpdf.layout.property.TextAlignment;
 import com.itextpdf.layout.property.UnitValue;
 
@@ -172,19 +169,16 @@ public abstract class PurchasableUser extends User implements Purchasable {
             );
             Table cusomterDetails = new Table(UnitValue.createPercentArray(new float[]{3, 1, 1, 3}));
             cusomterDetails.addCell(
-                    new Cell().add(
-                            new Paragraph("Bill to:")
-                    ).add(
+                    new Cell(1, 2).add(
                             new Paragraph(
-                                    this.user_name
-                            ).setBold()
-                    ).add(
-                            new Paragraph(
-                                    String.format("ID   :\t%s\nEmail:\t%s\nPhone:\t%s\n", this.user_id, this.user_email, this.user_phone_number)
+                                    String.format(
+                                            "Bill to  :\t%s\n" +
+                                            "ID       :\t%s\n" +
+                                            "Email    :\t%s\n" +
+                                            "Phone    :\t%s\n", this.user_name, this.user_id, this.user_email, this.user_phone_number)
                             )
                     ).setBorder(null).setFontSize(8)
             );
-            cusomterDetails.addCell(new Cell().setBorder(null));
             cusomterDetails.addCell(new Cell().setBorder(null));
             cusomterDetails.addCell(
                     new Cell().add(

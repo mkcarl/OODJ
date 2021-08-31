@@ -355,7 +355,29 @@ public class MainGUI extends JFrame{
                     int choice = JOptionPane.showOptionDialog(null, "Checking out. Do you want an invoice?", "Confirmation",
                             JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, buttons, buttons[0]);
 
-                    ((PurchasableUser)currentUser).checkOut(choice==0);
+                    class EmailWorker extends SwingWorker<Integer, Integer>
+                    {
+                        protected Integer doInBackground() throws Exception
+                        {
+                            // Do a time-consuming task.
+                            ((PurchasableUser)currentUser).checkOut(choice==0);
+                            return 42;
+                        }
+
+                        protected void done()
+                        {
+                            try
+                            {
+                                System.out.println("Done sending email");
+                            }
+                            catch (Exception e)
+                            {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                    new EmailWorker().execute();
+
 
                     JOptionPane.showMessageDialog(
                             null,
