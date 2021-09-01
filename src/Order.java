@@ -6,6 +6,7 @@ import FileIO.RecordNotFoundException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Array;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -76,15 +77,8 @@ public class Order {
     public void addItem(Product prod) {
         try {
             ArrayList<String> allPIDs = OrderProductFile.getPIDs(this.order_id);
-            order_items.add(new OrderItem(this.order_id, prod));
-
-            for (OrderItem orderItem :
-                    this.order_items) {
-                String currentPID = orderItem.getItemProduct().getProductID();
-                if (!allPIDs.contains(currentPID)) {
-                    OrderProductFile.addNewOrderProduct(this.order_id, currentPID, 1);
-                }
-            }
+            OrderProductFile.addNewOrderProduct(this.order_id, prod.getProductID(), 1);
+            this.order_items.add(new OrderItem(this.order_id, prod));
 
         } catch (IOException | RecordNotFoundException e) {
             e.printStackTrace();
@@ -97,22 +91,20 @@ public class Order {
     }
 
 
-    public static ArrayList<Order> readAllOrderOf(String UID) {
+    public static ArrayList<Order> readAllOrder() {
         ArrayList<ArrayList<String>> allOrders = null;
         ArrayList<Order> target = new ArrayList<>();
         try {
             allOrders = OrderFile.readAllOrders();
             int numOfEntries = allOrders.get(0).size();
             for (int i = 0; i < numOfEntries; i++) {
-                if (allOrders.get(0).get(i).equals(UID)) {
-                    target.add(
-                            new Order(
-                                    allOrders.get(0).get(i),
-                                    new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(allOrders.get(1).get(i)),
-                                    allOrders.get(2).get(i)
-                            )
-                    );
-                }
+                target.add(
+                        new Order(
+                                allOrders.get(0).get(i),
+                                new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(allOrders.get(1).get(i)),
+                                allOrders.get(2).get(i)
+                        )
+                );
             }
         } catch (FileNotFoundException|ParseException e) {
             e.printStackTrace();
@@ -127,16 +119,10 @@ public class Order {
 
     public void removeItem(int index){
         order_items.remove(index);
-        ArrayList<String> allPIDs = null;
         try {
-            allPIDs = OrderProductFile.getPIDs(this.order_id);
-            for (OrderItem orderItem :
-                    this.order_items) {
-                String currentPID = orderItem.getItemProduct().getProductID();
-                if (!allPIDs.contains(currentPID)) {
-                    OrderProductFile.deleteEntry(OrderProductFile.indicesOf(this.order_id).get(index));
-                }
-            }
+            ArrayList<Integer> allIndicesOfOID = OrderProductFile.indicesOf(this.order_id);
+            int target = allIndicesOfOID.get(index);
+            OrderProductFile.deleteEntry(target);
         } catch (IOException | RecordNotFoundException e) {
             e.printStackTrace();
         }
@@ -156,6 +142,11 @@ public class Order {
 
         try {
             OrderFile.updateEntry(2, OrderFile.indexOf(this.order_id), this.order_status);
+            for (OrderItem oi :
+                    this.order_items) {
+                Product prod = oi.getItemProduct();
+                ProductFile.updateEntry(5, ProductFile.indexOf(prod.getProductID()), Integer.toString(prod.getProductInventoryCount()-oi.getItemQuantity()));
+            }
         } catch (IOException | RecordNotFoundException e) {
             e.printStackTrace();
         }
@@ -175,5 +166,18 @@ public class Order {
 
     public ArrayList<OrderItem> getOrderItems(){
         return this.order_items;
+    }
+
+    public void updateQuantityOf(int orderItemIndex, int newQuantity){
+        try {
+            this.order_items.get(orderItemIndex).modifyQuantity(newQuantity);
+            OrderProductFile.updateEntry(
+                    2,
+                    OrderProductFile.indexOf(this.order_id, this.order_items.get(orderItemIndex).getItemProduct().getProductID()),
+                    Integer.toString(newQuantity)
+            );
+        } catch (IOException | RecordNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 }

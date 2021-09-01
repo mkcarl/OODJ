@@ -45,9 +45,11 @@ public class OrderItem {
 
     public boolean isEnough(int quantity){
         return
-                this.item_product.getProductInventoryCount() > quantity
+                this.item_product.getProductInventoryCount() >= quantity
                 &&
-                this.item_product.getProductInventoryCount() != 0;
+                this.item_product.getProductInventoryCount() != 0
+                &&
+                quantity > 0;
     }
 
     public double calculateAmount(){

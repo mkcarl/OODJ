@@ -12,6 +12,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,7 +22,7 @@ import java.util.Locale;
 /**
  * @author mkcarl
  */
-public class MainGUI extends JFrame {
+public class MainGUI extends JFrame{
     private JPanel parentPanel;
     private JPanel loginPanel;
     private JLabel lblLogin;
@@ -225,6 +227,7 @@ public class MainGUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 cl.show(parentPanel, "productListingPanel");
+                showUpdatedProductListingTable();
             }
         });
         btnBack_ManageProduct.addActionListener(new ActionListener() {
@@ -271,6 +274,21 @@ public class MainGUI extends JFrame {
                 cl.show(parentPanel, "cartPanel");
                 showUpdatedCartTable();
 
+                for (int i = 0; i < ((PurchasableUser) currentUser).getOrder_cart().getOrderItems().size(); i++) {
+                    OrderItem currentOrderItem = ((PurchasableUser) currentUser).getOrder_cart().getOrderItems().get(i);
+                    if (currentOrderItem.getItemProduct().getProductStatus().equals("INACTIVE")){
+                        JOptionPane.showMessageDialog(
+                                null,
+                                String.format(
+                                        "Item (%s) has been discontinued. It will be removed from your cart.",
+                                        currentOrderItem.getItemProduct().getProductName()
+                                ),
+                                "Warning",
+                                JOptionPane.WARNING_MESSAGE);
+                        ((PurchasableUser)currentUser).getOrder_cart().removeItem(i);
+                        showUpdatedCartTable();
+                    }
+                }
             }
         });
         btnCancel_NewCustomer.addActionListener(new ActionListener() {
@@ -340,9 +358,34 @@ public class MainGUI extends JFrame {
         btnAddToCart_ProductListing.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                if (tblProductListing.getSelectedRow() != -1) {
+                if (tblProductListing.getSelectedRow() != -1){
                     int index = tblProductListing.getSelectedRow();
-                    System.out.println(index);
+                    String pid = (String) tblProductListing.getValueAt(index, 0);
+                    boolean alreadyInCart = false;
+                    for (OrderItem oi :
+                            ((PurchasableUser)currentUser).getOrder_cart().getOrderItems()) {
+                        if (oi.getItemProduct().getProductID().equals(pid)){
+                            alreadyInCart = true;
+                            break;
+                        }
+                    }
+                    if (alreadyInCart){
+                        JOptionPane.showMessageDialog(null, "This item is already in cart!", "Warning", JOptionPane.WARNING_MESSAGE);
+
+                    } else {
+                        for (Product prod :
+                                allProducts) {
+                            if (prod.getProductID().equals(pid)) {
+                                ((PurchasableUser) currentUser).getOrder_cart().addItem(prod);
+                                JOptionPane.showMessageDialog(null, "Successfully added to cart!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                            }
+
+                            }
+                    }
+
+
+
+
                 } else {
                     JOptionPane.showMessageDialog(null, "Please select an item to be added to cart!");
                 }
@@ -358,6 +401,8 @@ public class MainGUI extends JFrame {
         });
         txtSearch_ProductListing.addKeyListener(new KeyAdapter() {
         });
+
+
 
         txtSearch_Cart.addKeyListener(new KeyAdapter() {
             @Override
@@ -394,6 +439,13 @@ public class MainGUI extends JFrame {
                 super.keyReleased(keyEvent);
                 searchCustomer();
 
+            }
+        });
+            txtSearch_Cart.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent keyEvent) {
+                super.keyReleased(keyEvent);
+                searchCartTable();
             }
         });
         txtSearch_ManageProduct.addKeyListener(new KeyAdapter() {
@@ -506,8 +558,8 @@ public class MainGUI extends JFrame {
             }
 
         };
-                fragileRadioButton.addActionListener(listener);
-                nonFragileRadioButton.addActionListener(listener);
+        fragileRadioButton.addActionListener(listener);
+        nonFragileRadioButton.addActionListener(listener);
 
         btnEdit_ManageProduct.addActionListener(new ActionListener() {
             @Override
@@ -576,6 +628,134 @@ public class MainGUI extends JFrame {
                 }
             }
         });
+        btnPlusOne.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                int index = tblCart.getSelectedRow();
+                if (index != -1) {
+                OrderItem currentOrderItem = ((PurchasableUser) currentUser).getOrder_cart().getOrderItems().get(index);
+                int currentQuantity = currentOrderItem.getItemQuantity();
+                    if (
+                            currentOrderItem.isEnough(currentQuantity + 1)
+                    ) {
+                        ((PurchasableUser) currentUser).getOrder_cart().getOrderItems().get(index).modifyQuantity(currentQuantity + 1);
+                        ((PurchasableUser) currentUser).getOrder_cart().updateQuantityOf(index, currentQuantity + 1);
+                        showUpdatedCartTable();
+                        tblCart.setRowSelectionInterval(index, index);
+
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "Please select an item!", "Warning", JOptionPane.WARNING_MESSAGE);
+                }
+            }
+        });
+        btnMinusOne.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                int index = tblCart.getSelectedRow();
+                if (index != -1) {
+                OrderItem currentOrderItem = ((PurchasableUser) currentUser).getOrder_cart().getOrderItems().get(index);
+                int currentQuantity = currentOrderItem.getItemQuantity();
+                    if (
+                            currentOrderItem.isEnough(currentQuantity - 1)
+                    ) {
+                        ((PurchasableUser) currentUser).getOrder_cart().getOrderItems().get(index).modifyQuantity(currentQuantity - 1);
+                        ((PurchasableUser) currentUser).getOrder_cart().updateQuantityOf(index, currentQuantity - 1);
+                        showUpdatedCartTable();
+                        tblCart.setRowSelectionInterval(index, index);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "Please select an item!", "Warning", JOptionPane.WARNING_MESSAGE);
+                }
+            }
+        });
+        btnRemove_Cart.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                int index = tblCart.getSelectedRow();
+                if (index != -1) {
+                    ((PurchasableUser)currentUser).getOrder_cart().removeItem(index);
+                    showUpdatedCartTable();
+                } else {
+                    JOptionPane.showMessageDialog(null, "Please select an item!", "Warning", JOptionPane.WARNING_MESSAGE);
+                }
+            }
+        });
+        btnCheckout_Cart.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                if (tblCart.getRowCount()==0){
+                    JOptionPane.showMessageDialog(null, "There is nothing to check out!", "Warning", JOptionPane.WARNING_MESSAGE);
+                } else{
+                    String[] buttons = {"Yes", "No"};
+                    int choice = JOptionPane.showOptionDialog(null, "Checking out. Do you want an invoice?", "Confirmation",
+                            JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, buttons, buttons[0]);
+
+                    class EmailWorker extends SwingWorker<Integer, Integer>
+                    {
+                        protected Integer doInBackground() throws Exception
+                        {
+                            // Do a time-consuming task.
+                            ((PurchasableUser)currentUser).checkOut(choice==0);
+                            return 42;
+                        }
+
+                        protected void done()
+                        {
+                            try
+                            {
+                                System.out.println("Done sending email");
+                            }
+                            catch (Exception e)
+                            {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                    new EmailWorker().execute();
+
+
+                    JOptionPane.showMessageDialog(
+                            null,
+                            String.format(
+                                    "Paid RM %.2f. Copy of invoice is sent to %s",
+                                    ((PurchasableUser)currentUser).getOrder_cart().calculateFinal(),
+                                    currentUser.user_email
+                            ),
+                            "Transaction successful",
+                            JOptionPane.INFORMATION_MESSAGE
+                    );
+                    if (currentUser instanceof Admin){
+                        currentUser = new Admin(currentUser.user_id);
+                    } else {
+                        currentUser = new Customer(currentUser.user_id);
+                    }
+                    showUpdatedCartTable();
+                }
+            }
+        });
+        btnGenerateReport_Admin.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                String[] buttons = {"Yes","No"};
+                int choice = JOptionPane.showOptionDialog(null, "Create a sales report for the last 30 days?", "Confirmation",
+                        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, buttons, buttons[0]);
+
+                if (choice == 0) {
+                    String pdfDir = ((Admin) currentUser).generateReport();
+                    JOptionPane.showMessageDialog(null, "Report generated", "Information", JOptionPane.INFORMATION_MESSAGE);
+                    if (Desktop.isDesktopSupported()) {
+                        try {
+                            File myFile = new File(pdfDir);
+                            Desktop.getDesktop().open(myFile);
+                        } catch (IOException ex) {
+                            // no application registered for PDFs
+                        }
+                    }
+
+                }
+            }
+        });
     }
 
     public static void main(String[] args) {
@@ -596,10 +776,10 @@ public class MainGUI extends JFrame {
 
     private void createUIComponents() {
         // Product listing page table initialisation
-        Object[] columnNames = {"Product ID", "Name", "Type", "Unit price", "Packaging charge", "Stock available"};
-        productModel = new DefaultTableModel(0, columnNames.length) {
+        Object[] columnNames = {"Product ID", "Name", "Type", "Unit price (RM)", "Packaging charge (RM)", "Stock available"};
+        productModel = new DefaultTableModel(0, columnNames.length){
             @Override
-            public boolean isCellEditable(int row, int column) {
+            public boolean isCellEditable(int row, int column){
                 return false;
             }
         };
@@ -611,11 +791,13 @@ public class MainGUI extends JFrame {
         tblProductListing.getTableHeader().setFont(
                 tblProductListing.getTableHeader().getFont().deriveFont(Font.BOLD, (float) 16)
         );
+        tblProductListing.getTableHeader().setReorderingAllowed(false);
+
         // Cart page table initialisation
-        columnNames = new Object[]{"Product Name", "Unit price", "Packaging charge", "Quantity", "Sub-total"};
-        cartModel = new DefaultTableModel(0, columnNames.length) {
+        columnNames = new Object[]{"Product Name", "Unit price (RM)", "Packaging charge (RM)", "Quantity", "Sub-total"};
+        cartModel = new DefaultTableModel(0, columnNames.length){
             @Override
-            public boolean isCellEditable(int row, int column) {
+            public boolean isCellEditable(int row, int column){
                 return false;
             }
         };
@@ -627,6 +809,8 @@ public class MainGUI extends JFrame {
         tblCart.getTableHeader().setFont(
                 tblCart.getTableHeader().getFont().deriveFont(Font.BOLD, (float) 16)
         );
+        tblCart.getTableHeader().setReorderingAllowed(false);
+
         // Manage Customer page table initialisation
         columnNames = new Object[]{"User ID", "User Password", "User Name", "Gender", "Email", "Phone Number"};
         manageCustomerModel = new DefaultTableModel(0, columnNames.length) {
@@ -670,7 +854,7 @@ public class MainGUI extends JFrame {
         // display all products if active and have stock
         for (Product prod :
                 allProducts) {
-            if (prod.getProductStatus().equals("ACTIVE") && prod.getProductInventoryCount() > 0) {
+            if (prod.getProductStatus().equals("ACTIVE") && prod.getProductInventoryCount() > 0){
                 Object[] details = {
                         prod.getProductID(),
                         prod.getProductName(),
@@ -684,7 +868,7 @@ public class MainGUI extends JFrame {
         }
     }
 
-    private void searchProductListingTable() {
+    private void searchProductListingTable(){
         productModel.setRowCount(0); // clear all rows
 
         for (Product prod :
@@ -707,12 +891,12 @@ public class MainGUI extends JFrame {
         }
     }
 
-    private void showUpdatedCartTable() {
+    private void showUpdatedCartTable(){
         cartModel.setRowCount(0);
         txtSearch_Cart.setText("");
 
         for (OrderItem oi :
-                ((Customer) currentUser).getOrder_cart().getOrderItems()) {
+                ((PurchasableUser) currentUser).getOrder_cart().getOrderItems()) {
             Object[] details = {
                     oi.getItemProduct().getProductName(),
                     oi.getItemProduct().getProductUnitPrice(),
@@ -722,14 +906,16 @@ public class MainGUI extends JFrame {
             };
             cartModel.insertRow(cartModel.getRowCount(), details);
         }
+        showUpdatedCheckOutDetails();
+
     }
 
-    private void searchCartTable() {
+    private void searchCartTable(){
         cartModel.setRowCount(0);
 
         for (OrderItem oi :
-                ((Customer) currentUser).getOrder_cart().getOrderItems()) {
-            if (oi.getItemProduct().getProductName().toLowerCase().contains(txtSearch_Cart.getText().toLowerCase())) {
+                ((PurchasableUser) currentUser).getOrder_cart().getOrderItems()) {
+            if(oi.getItemProduct().getProductName().toLowerCase().contains(txtSearch_Cart.getText().toLowerCase())) {
                 Object[] details = {
                         oi.getItemProduct().getProductName(),
                         oi.getItemProduct().getProductUnitPrice(),
@@ -740,8 +926,28 @@ public class MainGUI extends JFrame {
                 cartModel.insertRow(cartModel.getRowCount(), details);
             }
         }
+
+        if (txtSearch_Cart.getText().isEmpty()){
+            btnPlusOne.setEnabled(true);
+            btnMinusOne.setEnabled(true);
+        } else {
+            btnPlusOne.setEnabled(false);
+            btnMinusOne.setEnabled(false);
+        }
     }
 
+    private void showUpdatedCheckOutDetails(){
+        lblOidOutput.setText(((PurchasableUser) currentUser).getOrder_cart().getOrderID());
+        lblGrandTotal.setText(String.format("RM %.2f", ((PurchasableUser) currentUser).getOrder_cart().calculateFinal()));
+        double itemTotal=0, packingTotal=0;
+        for (OrderItem oi :
+                (((PurchasableUser) currentUser).getOrder_cart().getOrderItems())) {
+            itemTotal += oi.getItemProduct().getProductUnitPrice()*oi.getItemQuantity();
+            packingTotal += oi.getItemProduct().getProductPackagingCharge()*oi.getItemQuantity();
+        }
+        lblItemTotalOutput.setText(String.format("RM %.2f", itemTotal));
+        lblSurchargeOutput.setText(String.format("RM %.2f", packingTotal));
+    }
 
     private void showUpdatedCustomerTable() {
         manageCustomerModel.setRowCount(0);
