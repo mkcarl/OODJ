@@ -6,14 +6,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public abstract class User {
-    protected String user_id;
-    protected String user_password;
-    protected String user_name;
-    protected String user_gender;
-    protected String user_email;
-    protected String user_phone_number;
-    protected String user_role;
-    protected String user_status;
+    private String user_id;
+    private String user_password;
+    private String user_name;
+    private String user_gender;
+    private String user_email;
+    private String user_phone_number;
+    private String user_role;
+    private String user_status;
 
     public User(){}
 

@@ -89,7 +89,7 @@ public class Admin extends PurchasableUser {
                                                     "Generated on   : %s",
                                             dateFormatter.format(_30daysAgo),
                                             dateFormatter.format(_1dayAgo),
-                                            this.user_name, this.user_id,
+                                            this.getUser_name(), this.getUser_id(),
                                             dateFormatter.format(now)
                                     )
                             )

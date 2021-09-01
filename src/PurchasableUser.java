@@ -39,7 +39,7 @@ public abstract class PurchasableUser extends User implements Purchasable {
 
         try {
             // if there is existing orders
-            indexOfAllOrderID = OrderFile.indicesOf(this.user_id); // all the order id of this particular user
+            indexOfAllOrderID = OrderFile.indicesOf(this.getUser_id()); // all the order id of this particular user
             allOrderFromFile = OrderFile.readAllOrders(); // all the orders
             latestOID = allOrderFromFile.get(0).get(indexOfAllOrderID.get(indexOfAllOrderID.size() - 1)); // get the last order id of this dude
 
@@ -53,10 +53,10 @@ public abstract class PurchasableUser extends User implements Purchasable {
         } catch (IOException e) {
             e.printStackTrace();
         } catch (RecordNotFoundException e) { // if there are no records for them
-            Order.addOrder(this.user_id); // create a new entry for them first
+            Order.addOrder(this.getUser_id()); // create a new entry for them first
             try {
                 // basically same thing as above
-                indexOfAllOrderID = OrderFile.indicesOf(this.user_id);
+                indexOfAllOrderID = OrderFile.indicesOf(this.getUser_id());
                 allOrderFromFile = OrderFile.readAllOrders();
                 latestOID = allOrderFromFile.get(0).get(indexOfAllOrderID.get(indexOfAllOrderID.size() - 1));
 
@@ -77,7 +77,7 @@ public abstract class PurchasableUser extends User implements Purchasable {
 
         try {
             // if there is existing orders
-            indexOfAllOrderID = OrderFile.indicesOf(this.user_id); // all the order id of this particular user
+            indexOfAllOrderID = OrderFile.indicesOf(this.getUser_id()); // all the order id of this particular user
             allOrderFromFile = OrderFile.readAllOrders(); // all the orders
             latestOID = allOrderFromFile.get(0).get(indexOfAllOrderID.get(indexOfAllOrderID.size() - 1)); // get the last order id of this dude
 
@@ -94,11 +94,11 @@ public abstract class PurchasableUser extends User implements Purchasable {
             OrderFile.addNewOrder(
                     new Date(),
                     "PENDING",
-                    this.user_id
+                    this.getUser_id()
             ); // create a new entry for them first
             try {
                 // basically same thing as above
-                indexOfAllOrderID = OrderFile.indicesOf(this.user_id);
+                indexOfAllOrderID = OrderFile.indicesOf(this.getUser_id());
                 allOrderFromFile = OrderFile.readAllOrders();
                 latestOID = allOrderFromFile.get(0).get(indexOfAllOrderID.get(indexOfAllOrderID.size() - 1));
 
@@ -169,9 +169,9 @@ public abstract class PurchasableUser extends User implements Purchasable {
                             new Paragraph(
                                     String.format(
                                             "Bill to  :\t%s\n" +
-                                            "ID       :\t%s\n" +
-                                            "Email    :\t%s\n" +
-                                            "Phone    :\t%s\n", this.user_name, this.user_id, this.user_email, this.user_phone_number)
+                                                    "ID       :\t%s\n" +
+                                                    "Email    :\t%s\n" +
+                                                    "Phone    :\t%s\n", this.getUser_name(), this.getUser_id(), this.getUser_email(), this.getUser_phone_number())
                             )
                     ).setBorder(null).setFontSize(8)
             );
@@ -290,12 +290,12 @@ public abstract class PurchasableUser extends User implements Purchasable {
             document.add(invoiceDetails);
             document.close();
             emailFile(
-                    this.user_email,
+                    this.getUser_email(),
                     String.format("Invoice %s", this.order_cart.getOrderID()),
                     String.format("Attach is the invoice for Order %s. Please do not reply.", this.order_cart.getOrderID()),
                     String.format("Invoice_%s.pdf", this.order_cart.getOrderID()),
                     dest
-                    );
+            );
 
 
         } catch (FileNotFoundException e) {

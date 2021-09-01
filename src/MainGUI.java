@@ -694,7 +694,7 @@ public class MainGUI extends JFrame {
                                 String.format(
                                         "Paid RM %.2f. Copy of invoice is sent to %s",
                                         ((PurchasableUser) currentUser).getOrder_cart().calculateFinal(),
-                                        currentUser.user_email
+                                        currentUser.getUser_email()
                                 ),
                                 "Transaction successful",
                                 JOptionPane.INFORMATION_MESSAGE
@@ -711,9 +711,9 @@ public class MainGUI extends JFrame {
                         );
                     }
                     if (currentUser instanceof Admin) {
-                        currentUser = new Admin(currentUser.user_id);
+                        currentUser = new Admin(currentUser.getUser_id());
                     } else {
-                        currentUser = new Customer(currentUser.user_id);
+                        currentUser = new Customer(currentUser.getUser_id());
                     }
                     showUpdatedCartTable();
                 }
