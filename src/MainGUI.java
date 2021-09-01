@@ -518,22 +518,27 @@ public class MainGUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
 
-                if (lblTitle_NewProduct.getText().contains("Edit")) {
-                    JOptionPane.showMessageDialog(null, "Product Has Been Edited!");
-                    editProduct();
-
-                } else if (lblTitle_NewProduct.getText().contains("New")) {
-                    JOptionPane.showMessageDialog(null, "New Product Created!");
-                    setNewProduct();
+                try {
+                    if (lblTitle_NewProduct.getText().contains("Edit")) {
+                        editProduct();
+                        JOptionPane.showMessageDialog(null, "Product Has Been Edited!");
+                    } else if (lblTitle_NewProduct.getText().contains("New")) {
+                        setNewProduct();
+                        JOptionPane.showMessageDialog(null, "New Product Created!");
+                    }
+                    txtPID.setText("");
+                    txtItemName.setText("");
+                    txtUnitPrice.setText("");
+                    txtInventoryCount.setText("");
+                    txtPackagingCharge.setText("");
+                    prodTypeGrp.clearSelection();
+                    cl.show(parentPanel, "manageProductPanel");
+                    showUpdatedProductTable();
+                } catch (NumberFormatException e){
+                    JOptionPane.showMessageDialog(null, "Invalid input. Please check and try again");
+                    txtUnitPrice.setText("");
+                    txtInventoryCount.setText("");
                 }
-                txtPID.setText("");
-                txtItemName.setText("");
-                txtUnitPrice.setText("");
-                txtInventoryCount.setText("");
-                txtPackagingCharge.setText("");
-                prodTypeGrp.clearSelection();
-                cl.show(parentPanel, "manageProductPanel");
-                showUpdatedProductTable();
             }
         });
         ActionListener listener = new ActionListener() {
@@ -1026,7 +1031,7 @@ public class MainGUI extends JFrame {
 
     }
 
-    private void setNewProduct() {
+    private void setNewProduct() throws NumberFormatException {
         ProductFile newProduct = new ProductFile();
         String getItemName = txtItemName.getText();
         String ptype = "";
@@ -1047,21 +1052,23 @@ public class MainGUI extends JFrame {
         Product.addProduct(getItemName, ptype, getUnitPrice, packagingCharge, getInventoryCount, status);
     }
 
-    private void editProduct() {
+
+    private void editProduct() throws NumberFormatException {
         int index = tblManageProduct.getSelectedRow();
         if (index != -1) {
             String pid = (String) tblManageProduct.getValueAt(index, 0);
             for (Product prod :
                     allProducts) {
                 if (pid.equals(prod.getProductID())) {
+                    double unitPrice = Double.parseDouble(txtUnitPrice.getText());
+                    int invCount = Integer.parseInt(txtInventoryCount.getText());
                     prod.setProductName(txtItemName.getText());
                     prod.setProductType(
                             fragileRadioButton.isSelected() ? "FRAGILE" :
                                     nonFragileRadioButton.isSelected() ? "NOT_FRAGILE" : ""
                     );
-                    prod.setProductUnitPrice(Double.parseDouble(txtUnitPrice.getText()));
-                    prod.setInventoryCount(Integer.parseInt(txtInventoryCount.getText()));
-
+                    prod.setProductUnitPrice(unitPrice);
+                    prod.setInventoryCount(invCount);
 
                 }
             }
