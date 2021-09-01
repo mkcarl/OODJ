@@ -15,8 +15,6 @@ public abstract class User {
     protected String user_role;
     protected String user_status;
 
-//    private int rowNo;
-
     public User(){}
 
     public User(String uid, String upassword, String uname, String ugender, String uemail, String uphonenumber, String urole, String ustatus){
@@ -139,11 +137,6 @@ public abstract class User {
                     }
                 }
             }
-/*            if(user_id.equals(uid) && user_password.equals(pw)){
-                check = true;
-            }else{
-                check = false;
-            }*/
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -152,7 +145,6 @@ public abstract class User {
     }
 
     public static String accountTypeOf(String user_id){
-        //TODO check first prefix of user_id and return Admin or Customer
         String role = "";
         try{
             if (user_id.startsWith("C")){
@@ -196,5 +188,4 @@ public abstract class User {
         }
         return user_status.equals("ACTIVE");
     }
-
 }

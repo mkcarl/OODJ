@@ -18,9 +18,6 @@ public class Customer extends PurchasableUser{
         super(uid);
     }
 
-    public static void addCustomer(String pw, String name, String gender, String email, String phone_num, String role, String status){
-        UserFile.addNewUser(pw,name,gender,email,phone_num,role,status);
-    }
     public static void deleteCustomer(String customerID){
         try{
             int userRowNum = UserFile.indexOf(customerID);
@@ -58,53 +55,4 @@ public class Customer extends PurchasableUser{
         }
         return allCustomer;
     }
-//    public static ArrayList<User> searchCustomer(String mode, String keyword) {
-//        ArrayList<ArrayList<String>> allUser = null;
-//        ArrayList<User> searchResult =new ArrayList<>();
-//        try {
-//            allUser = UserFile.readAllUsers();
-//            switch (mode) {
-//                case "uid":
-//                    for (User user :
-//                            allUser) {
-//                        if (user.user_id.equals(keyword)) {
-//                            searchResult.add(user);
-//                            break;
-//                        }
-//                    }
-//                    break;
-//                case "uname":
-//                    for (User user :
-//                            allUser) {
-//                        if (user.user_name.contains(keyword)) {
-//                            searchResult.add(user);
-//                        }
-//                    }
-//                    break;
-//            }
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        }
-//
-//        return searchResult;
-//    }
-/*
-    public void queryOrderHistory(String uid){
-        try{
-//            ArrayList<ArrayList<String>> allUserFromFile = UserFile.readAllUsers(); //user file
-//            int userNo = allUserFromFile.get(0).indexOf(uid);
-
-            ArrayList<Integer> allOID = OrderFile.indicesOf(uid); //order file
-            for
-
-            ArrayList<ArrayList<String>> allProductInOrder = ProductFile.readAllProducts(); //order product file
-            int product = allProductInOrder.get(0).indexOf(uid);
-            this. = allProductInOrder.get(1).get(prodOrder);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-    }
-
- */
 }

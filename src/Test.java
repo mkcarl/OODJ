@@ -41,9 +41,6 @@ public class Test {
         UserFile.addNewUser("456", "Adam", "MALE", "Adam@gmail.com", "01233434", "CUSTOMER", "ACTIVE");
         UserFile.addNewUser("567", "May", "FEMALE", "May1236@gmail.com", "4487970234", "CUSTOMER", "ACTIVE");
         UserFile.addNewUser("123433", "June", "FEMALE", "June66@gmail.com", "344234234", "CUSTOMER", "ACTIVE");
-
-        // TODO : deleting user, change status or delete record
-
     }
 
     public static void createDummyProducts(){

@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 /**
  * @author mkcarl
  */
-public class MainGUI extends JFrame{
+public class MainGUI extends JFrame {
     private JPanel parentPanel;
     private JPanel loginPanel;
     private JLabel lblLogin;
@@ -34,7 +34,6 @@ public class MainGUI extends JFrame{
     private JScrollPane JScrollCustomer;
     private JTable tblCustomer;
     private JButton btnAdd;
-    private JButton btnHistory_ManageCustomer;
     private JButton btnEdit_ManageCustomer;
     private JButton btnDelete_ManageCustomer;
     private JButton btnBack_ManageCustomer;
@@ -121,7 +120,7 @@ public class MainGUI extends JFrame{
     ButtonGroup prodTypeGrp;
 
 
-    public MainGUI(){
+    public MainGUI() {
         setContentPane(parentPanel);
 
         parentPanel.add(loginPanel, "loginPanel");
@@ -155,20 +154,20 @@ public class MainGUI extends JFrame{
                     if (User.isValid(getUID, getPass)) {
                         if (User.accountTypeOf(getUID).equals("CUSTOMER")) {
                             currentUser = new Customer(getUID);
-                            if (User.isActive(getUID)){
-                            JOptionPane.showMessageDialog(null, "Login Successful! Welcome Customer !");
-                            cl.show(parentPanel, "customerWelcomePanel");
-                            System.out.println(getUID + ", " + getPass);
-                            }else{
-                                JOptionPane.showMessageDialog(null,"Inactive User! Try Again");
+                            if (User.isActive(getUID)) {
+                                JOptionPane.showMessageDialog(null, "Login Successful! Welcome Customer !");
+                                cl.show(parentPanel, "customerWelcomePanel");
+                                System.out.println(getUID + ", " + getPass);
+                            } else {
+                                JOptionPane.showMessageDialog(null, "Inactive User! Try Again");
                             }
-                        }else{
+                        } else {
                             currentUser = new Admin(getUID);
-                            if(User.isActive(getUID)){
-                            JOptionPane.showMessageDialog(null,"Login Successful! Welcome Admin !");
-                            cl.show(parentPanel,"adminWelcomePanel");
-                            System.out.println(getUID + ", " + getPass);
-                            }else {
+                            if (User.isActive(getUID)) {
+                                JOptionPane.showMessageDialog(null, "Login Successful! Welcome Admin !");
+                                cl.show(parentPanel, "adminWelcomePanel");
+                                System.out.println(getUID + ", " + getPass);
+                            } else {
                                 JOptionPane.showMessageDialog(null, "Inactive User! Try Again");
                             }
                         }
@@ -235,10 +234,10 @@ public class MainGUI extends JFrame{
         btnBack_ProductListing.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                if(currentUser instanceof Customer){
+                if (currentUser instanceof Customer) {
                     cl.show(parentPanel, "customerWelcomePanel");
 
-                }else if (currentUser instanceof Admin){
+                } else if (currentUser instanceof Admin) {
                     cl.show(parentPanel, "adminWelcomePanel");
                 }
             }
@@ -272,7 +271,7 @@ public class MainGUI extends JFrame{
 
                 for (int i = 0; i < ((PurchasableUser) currentUser).getOrder_cart().getOrderItems().size(); i++) {
                     OrderItem currentOrderItem = ((PurchasableUser) currentUser).getOrder_cart().getOrderItems().get(i);
-                    if (currentOrderItem.getItemProduct().getProductStatus().equals("INACTIVE")){
+                    if (! currentOrderItem.isAvailable()) {
                         JOptionPane.showMessageDialog(
                                 null,
                                 String.format(
@@ -281,7 +280,7 @@ public class MainGUI extends JFrame{
                                 ),
                                 "Warning",
                                 JOptionPane.WARNING_MESSAGE);
-                        ((PurchasableUser)currentUser).getOrder_cart().removeItem(i);
+                        ((PurchasableUser) currentUser).getOrder_cart().removeItem(i);
                         showUpdatedCartTable();
                     }
                 }
@@ -297,7 +296,7 @@ public class MainGUI extends JFrame{
                 txtEmail.setText("");
                 txtPhoneNumber.setText("");
                 genderGrp.clearSelection();
-                cl.show(parentPanel,"customerPanel");
+                cl.show(parentPanel, "customerPanel");
 
 
             }
@@ -308,7 +307,7 @@ public class MainGUI extends JFrame{
                 lblTitle_NewCustomer.setText("New Customer");
                 cl.show(parentPanel, "newCustomerPanel");
                 try {
-                    String displayUID  = UserFile.getUID("CUSTOMER");
+                    String displayUID = UserFile.getUID("CUSTOMER");
                     txtUID.setText(displayUID);
                     txtUID.setEnabled(false);
                     femaleRadioButton.setEnabled(true);
@@ -328,7 +327,7 @@ public class MainGUI extends JFrame{
                 txtInventoryCount.setText("");
                 txtPackagingCharge.setText("");
                 prodTypeGrp.clearSelection();
-                cl.show(parentPanel,"manageProductPanel");
+                cl.show(parentPanel, "manageProductPanel");
                 showUpdatedProductTable();
 
             }
@@ -354,18 +353,18 @@ public class MainGUI extends JFrame{
         btnAddToCart_ProductListing.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                if (tblProductListing.getSelectedRow() != -1){
+                if (tblProductListing.getSelectedRow() != -1) {
                     int index = tblProductListing.getSelectedRow();
                     String pid = (String) tblProductListing.getValueAt(index, 0);
                     boolean alreadyInCart = false;
                     for (OrderItem oi :
-                            ((PurchasableUser)currentUser).getOrder_cart().getOrderItems()) {
-                        if (oi.getItemProduct().getProductID().equals(pid)){
+                            ((PurchasableUser) currentUser).getOrder_cart().getOrderItems()) {
+                        if (oi.getItemProduct().getProductID().equals(pid)) {
                             alreadyInCart = true;
                             break;
                         }
                     }
-                    if (alreadyInCart){
+                    if (alreadyInCart) {
                         JOptionPane.showMessageDialog(null, "This item is already in cart!", "Warning", JOptionPane.WARNING_MESSAGE);
 
                     } else {
@@ -376,10 +375,8 @@ public class MainGUI extends JFrame{
                                 JOptionPane.showMessageDialog(null, "Successfully added to cart!", "Success", JOptionPane.INFORMATION_MESSAGE);
                             }
 
-                            }
+                        }
                     }
-
-
 
 
                 } else {
@@ -399,7 +396,6 @@ public class MainGUI extends JFrame{
         });
 
 
-
         txtSearch_Cart.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent keyEvent) {
@@ -411,12 +407,12 @@ public class MainGUI extends JFrame{
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 try {
-                    if(UserFile.userExist(txtUsername.getText())) {
+                    if (UserFile.userExist(txtUsername.getText())) {
                         cl.show(parentPanel, "forgetPasswordPanel");
                     }
 
                 } catch (RecordNotFoundException | IOException e) {
-                    JOptionPane.showMessageDialog(null,"User ID invalid, Please Check and Try Again");
+                    JOptionPane.showMessageDialog(null, "User ID invalid, Please Check and Try Again");
                 }
             }
         });
@@ -427,7 +423,7 @@ public class MainGUI extends JFrame{
                 String newPw = txtNewPassword.getText();
                 String getUID = txtUsername.getText();
                 User.resetPassword(getUID, resetCode, newPw);
-                JOptionPane.showMessageDialog(null,"Password has been reset.");
+                JOptionPane.showMessageDialog(null, "Password has been reset.");
                 txtResetCode.setText("");
                 txtNewPassword.setText("");
                 cl.show(parentPanel, "loginPanel");
@@ -441,7 +437,7 @@ public class MainGUI extends JFrame{
 
             }
         });
-            txtSearch_Cart.addKeyListener(new KeyAdapter() {
+        txtSearch_Cart.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent keyEvent) {
                 super.keyReleased(keyEvent);
@@ -467,15 +463,15 @@ public class MainGUI extends JFrame{
                 String PATTERN = "^[A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9]+)*@" + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
                 Pattern pattern = Pattern.compile(PATTERN);
                 Matcher matcher = pattern.matcher(txtEmail.getText());
-                if (matcher.matches()){
-                    if(lblTitle_NewCustomer.getText().contains("Edit")){
-                        JOptionPane.showMessageDialog(null,"User Details have been updated!");
+                if (matcher.matches()) {
+                    if (lblTitle_NewCustomer.getText().contains("Edit")) {
+                        JOptionPane.showMessageDialog(null, "User Details have been updated!");
                         editCustomer();
 
 
-                    }else if (lblTitle_NewCustomer.getText().contains("New")){
+                    } else if (lblTitle_NewCustomer.getText().contains("New")) {
                         setNewCustomer();
-                        JOptionPane.showMessageDialog(null,"New Customer Created!");
+                        JOptionPane.showMessageDialog(null, "New Customer Created!");
 
                     }
                     txtUID.setText("");
@@ -484,10 +480,10 @@ public class MainGUI extends JFrame{
                     txtEmail.setText("");
                     txtPhoneNumber.setText("");
                     genderGrp.clearSelection();
-                    cl.show(parentPanel,"customerPanel");
+                    cl.show(parentPanel, "customerPanel");
                     showUpdatedCustomerTable();
-                }else{
-                    JOptionPane.showMessageDialog(null,"Incorrect Email Format! Please Check and Try Again","WARNING",JOptionPane.WARNING_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Incorrect Email Format! Please Check and Try Again", "WARNING", JOptionPane.WARNING_MESSAGE);
                     txtEmail.setText("");
                 }
 
@@ -497,30 +493,30 @@ public class MainGUI extends JFrame{
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 int index = tblCustomer.getSelectedRow();
-                if (index!=-1){
+                if (index != -1) {
                     txtUID.setEnabled(false);
-                    String uid = (String)tblCustomer.getValueAt(index,0);
+                    String uid = (String) tblCustomer.getValueAt(index, 0);
                     txtUID.setText(uid);
-                    String userName = (String)tblCustomer.getValueAt(index,2);
+                    String userName = (String) tblCustomer.getValueAt(index, 2);
                     txtName.setText(userName);
-                    String password = (String)tblCustomer.getValueAt(index,1);
+                    String password = (String) tblCustomer.getValueAt(index, 1);
                     txtPassword.setText(password);
-                    String gender = (String)tblCustomer.getValueAt(index,3);
-                    if(gender.equals("MALE")){
+                    String gender = (String) tblCustomer.getValueAt(index, 3);
+                    if (gender.equals("MALE")) {
                         maleRadioButton.doClick();
-                    }else if (gender.equals("FEMALE")){
+                    } else if (gender.equals("FEMALE")) {
                         femaleRadioButton.doClick();
                     }
                     maleRadioButton.setEnabled(false);
                     femaleRadioButton.setEnabled(false);
-                    String email = (String)tblCustomer.getValueAt(index,4);
+                    String email = (String) tblCustomer.getValueAt(index, 4);
                     txtEmail.setText(email);
-                    String phoneNo = (String)tblCustomer.getValueAt(index,5);
+                    String phoneNo = (String) tblCustomer.getValueAt(index, 5);
                     txtPhoneNumber.setText(phoneNo);
                     lblTitle_NewCustomer.setText("Edit Customer");
-                    cl.show(parentPanel,"newCustomerPanel");
+                    cl.show(parentPanel, "newCustomerPanel");
                 } else {
-                    JOptionPane.showMessageDialog(null,"Please Select an Item","Warning",JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Please Select an Item", "Warning", JOptionPane.WARNING_MESSAGE);
                 }
             }
         });
@@ -542,16 +538,16 @@ public class MainGUI extends JFrame{
                 txtInventoryCount.setText("");
                 txtPackagingCharge.setText("");
                 prodTypeGrp.clearSelection();
-                cl.show(parentPanel,"manageProductPanel");
+                cl.show(parentPanel, "manageProductPanel");
                 showUpdatedProductTable();
             }
         });
         ActionListener listener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                if(fragileRadioButton.isSelected()){
+                if (fragileRadioButton.isSelected()) {
                     txtPackagingCharge.setText("1.5");
-                }else if(nonFragileRadioButton.isSelected()){
+                } else if (nonFragileRadioButton.isSelected()) {
                     txtPackagingCharge.setText("0.5");
                 }
             }
@@ -564,39 +560,31 @@ public class MainGUI extends JFrame{
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 int index = tblManageProduct.getSelectedRow();
-                if (index != -1){
+                if (index != -1) {
                     txtPID.setEnabled(false);
                     txtPackagingCharge.setEnabled(false);
-                    String pid = (String)tblManageProduct.getValueAt(index,0);
+                    String pid = (String) tblManageProduct.getValueAt(index, 0);
                     txtPID.setText(pid);
-                    String itemName = (String)tblManageProduct.getValueAt(index,1);
+                    String itemName = (String) tblManageProduct.getValueAt(index, 1);
                     txtItemName.setText(itemName);
-                    String unitPrice = Double.toString((Double)tblManageProduct.getValueAt(index,3));
+                    String unitPrice = Double.toString((Double) tblManageProduct.getValueAt(index, 3));
                     txtUnitPrice.setText(unitPrice);
-                    String inventoryCount = Integer.toString((Integer)tblManageProduct.getValueAt(index,5));
+                    String inventoryCount = Integer.toString((Integer) tblManageProduct.getValueAt(index, 5));
                     txtInventoryCount.setText(inventoryCount);
-                    String ptype = (String)tblManageProduct.getValueAt(index,2);
-                    if(ptype.equals("FRAGILE")){
+                    String ptype = (String) tblManageProduct.getValueAt(index, 2);
+                    if (ptype.equals("FRAGILE")) {
                         fragileRadioButton.doClick();
-                    }else if (ptype.equals("NOT_FRAGILE")){
+                    } else if (ptype.equals("NOT_FRAGILE")) {
                         nonFragileRadioButton.doClick();
                     }
-                    String pkgCharge = Double.toString((Double)tblManageProduct.getValueAt(index,4));
+                    String pkgCharge = Double.toString((Double) tblManageProduct.getValueAt(index, 4));
                     txtPackagingCharge.setText(pkgCharge);
 
-
-
-//                    fragileRadioButton.setActionCommand(fragileRadioButton.getText());
-//                    nonFragileRadioButton.setActionCommand(nonFragileRadioButton.getText());
-
-
-
                     lblTitle_NewProduct.setText("Edit Product");
-                    cl.show(parentPanel,"newProductPanel");
-                }else{
-                    JOptionPane.showMessageDialog(null,"Please Select an Item","Warning",JOptionPane.WARNING_MESSAGE);
+                    cl.show(parentPanel, "newProductPanel");
+                } else {
+                    JOptionPane.showMessageDialog(null, "Please Select an Item", "Warning", JOptionPane.WARNING_MESSAGE);
                 }
-
 
 
             }
@@ -610,8 +598,8 @@ public class MainGUI extends JFrame{
                     Product.deleteProduct(col);
                     JOptionPane.showMessageDialog(null, "Product Deleted !");
                     showUpdatedProductTable();
-                }else{
-                    JOptionPane.showMessageDialog(null,"Please Select an Item","Warning",JOptionPane.WARNING_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Please Select an Item", "Warning", JOptionPane.WARNING_MESSAGE);
                 }
 
             }
@@ -620,13 +608,13 @@ public class MainGUI extends JFrame{
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 int index = tblCustomer.getSelectedRow();
-                if (index != -1){
-                    String col = (String)tblCustomer.getValueAt(index,0);
+                if (index != -1) {
+                    String col = (String) tblCustomer.getValueAt(index, 0);
                     Customer.deleteCustomer(col);
-                    JOptionPane.showMessageDialog(null,"Customer Deleted !");
+                    JOptionPane.showMessageDialog(null, "Customer Deleted !");
                     showUpdatedCustomerTable();
-                }else{
-                    JOptionPane.showMessageDialog(null,"Please Select an Item","Warning",JOptionPane.WARNING_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Please Select an Item", "Warning", JOptionPane.WARNING_MESSAGE);
                 }
             }
         });
@@ -635,8 +623,8 @@ public class MainGUI extends JFrame{
             public void actionPerformed(ActionEvent actionEvent) {
                 int index = tblCart.getSelectedRow();
                 if (index != -1) {
-                OrderItem currentOrderItem = ((PurchasableUser) currentUser).getOrder_cart().getOrderItems().get(index);
-                int currentQuantity = currentOrderItem.getItemQuantity();
+                    OrderItem currentOrderItem = ((PurchasableUser) currentUser).getOrder_cart().getOrderItems().get(index);
+                    int currentQuantity = currentOrderItem.getItemQuantity();
                     if (
                             currentOrderItem.isEnough(currentQuantity + 1)
                     ) {
@@ -656,8 +644,8 @@ public class MainGUI extends JFrame{
             public void actionPerformed(ActionEvent actionEvent) {
                 int index = tblCart.getSelectedRow();
                 if (index != -1) {
-                OrderItem currentOrderItem = ((PurchasableUser) currentUser).getOrder_cart().getOrderItems().get(index);
-                int currentQuantity = currentOrderItem.getItemQuantity();
+                    OrderItem currentOrderItem = ((PurchasableUser) currentUser).getOrder_cart().getOrderItems().get(index);
+                    int currentQuantity = currentOrderItem.getItemQuantity();
                     if (
                             currentOrderItem.isEnough(currentQuantity - 1)
                     ) {
@@ -676,7 +664,7 @@ public class MainGUI extends JFrame{
             public void actionPerformed(ActionEvent actionEvent) {
                 int index = tblCart.getSelectedRow();
                 if (index != -1) {
-                    ((PurchasableUser)currentUser).getOrder_cart().removeItem(index);
+                    ((PurchasableUser) currentUser).getOrder_cart().removeItem(index);
                     showUpdatedCartTable();
                 } else {
                     JOptionPane.showMessageDialog(null, "Please select an item!", "Warning", JOptionPane.WARNING_MESSAGE);
@@ -686,30 +674,24 @@ public class MainGUI extends JFrame{
         btnCheckout_Cart.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                if (tblCart.getRowCount()==0){
+                if (tblCart.getRowCount() == 0) {
                     JOptionPane.showMessageDialog(null, "There is nothing to check out!", "Warning", JOptionPane.WARNING_MESSAGE);
-                } else{
+                } else {
                     String[] buttons = {"Yes", "No"};
                     int choice = JOptionPane.showOptionDialog(null, "Checking out. Do you want an invoice?", "Confirmation",
                             JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, buttons, buttons[0]);
 
-                    class EmailWorker extends SwingWorker<Integer, Integer>
-                    {
-                        protected Integer doInBackground() throws Exception
-                        {
+                    class EmailWorker extends SwingWorker<Integer, Integer> {
+                        protected Integer doInBackground() throws Exception {
                             // Do a time-consuming task.
-                            ((PurchasableUser)currentUser).checkOut(choice==0);
+                            ((PurchasableUser) currentUser).checkOut(choice == 0);
                             return 42;
                         }
 
-                        protected void done()
-                        {
-                            try
-                            {
+                        protected void done() {
+                            try {
                                 System.out.println("Done sending email");
-                            }
-                            catch (Exception e)
-                            {
+                            } catch (Exception e) {
                                 e.printStackTrace();
                             }
                         }
@@ -721,13 +703,13 @@ public class MainGUI extends JFrame{
                             null,
                             String.format(
                                     "Paid RM %.2f. Copy of invoice is sent to %s",
-                                    ((PurchasableUser)currentUser).getOrder_cart().calculateFinal(),
+                                    ((PurchasableUser) currentUser).getOrder_cart().calculateFinal(),
                                     currentUser.user_email
                             ),
                             "Transaction successful",
                             JOptionPane.INFORMATION_MESSAGE
                     );
-                    if (currentUser instanceof Admin){
+                    if (currentUser instanceof Admin) {
                         currentUser = new Admin(currentUser.user_id);
                     } else {
                         currentUser = new Customer(currentUser.user_id);
@@ -739,7 +721,7 @@ public class MainGUI extends JFrame{
         btnGenerateReport_Admin.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                String[] buttons = {"Yes","No"};
+                String[] buttons = {"Yes", "No"};
                 int choice = JOptionPane.showOptionDialog(null, "Create a sales report for the last 30 days?", "Confirmation",
                         JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, buttons, buttons[0]);
 
@@ -760,28 +742,12 @@ public class MainGUI extends JFrame{
         });
     }
 
-    public static void main(String[] args) {
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (ClassNotFoundException | InstantiationException |
-                IllegalAccessException | UnsupportedLookAndFeelException e) {
-            e.printStackTrace();
-        }
-        MainGUI mainGUI = new MainGUI();
-        mainGUI.setSize(1280, 720);
-        mainGUI.setResizable(false);
-        mainGUI.setVisible(true);
-        mainGUI.setLocationRelativeTo(null); // middle of screen
-        mainGUI.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    }
-
-
     private void createUIComponents() {
         // Product listing page table initialisation
         Object[] columnNames = {"Product ID", "Name", "Type", "Unit price (RM)", "Packaging charge (RM)", "Stock available"};
-        productModel = new DefaultTableModel(0, columnNames.length){
+        productModel = new DefaultTableModel(0, columnNames.length) {
             @Override
-            public boolean isCellEditable(int row, int column){
+            public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
@@ -797,9 +763,9 @@ public class MainGUI extends JFrame{
 
         // Cart page table initialisation
         columnNames = new Object[]{"Product Name", "Unit price (RM)", "Packaging charge (RM)", "Quantity", "Sub-total"};
-        cartModel = new DefaultTableModel(0, columnNames.length){
+        cartModel = new DefaultTableModel(0, columnNames.length) {
             @Override
-            public boolean isCellEditable(int row, int column){
+            public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
@@ -856,7 +822,7 @@ public class MainGUI extends JFrame{
         // display all products if active and have stock
         for (Product prod :
                 allProducts) {
-            if (prod.getProductStatus().equals("ACTIVE") && prod.getProductInventoryCount() > 0){
+            if (prod.getProductStatus().equals("ACTIVE") && prod.getProductInventoryCount() > 0) {
                 Object[] details = {
                         prod.getProductID(),
                         prod.getProductName(),
@@ -870,7 +836,7 @@ public class MainGUI extends JFrame{
         }
     }
 
-    private void searchProductListingTable(){
+    private void searchProductListingTable() {
         productModel.setRowCount(0); // clear all rows
 
         for (Product prod :
@@ -893,7 +859,7 @@ public class MainGUI extends JFrame{
         }
     }
 
-    private void showUpdatedCartTable(){
+    private void showUpdatedCartTable() {
         cartModel.setRowCount(0);
         txtSearch_Cart.setText("");
 
@@ -912,12 +878,12 @@ public class MainGUI extends JFrame{
 
     }
 
-    private void searchCartTable(){
+    private void searchCartTable() {
         cartModel.setRowCount(0);
 
         for (OrderItem oi :
                 ((PurchasableUser) currentUser).getOrder_cart().getOrderItems()) {
-            if(oi.getItemProduct().getProductName().toLowerCase().contains(txtSearch_Cart.getText().toLowerCase())) {
+            if (oi.getItemProduct().getProductName().toLowerCase().contains(txtSearch_Cart.getText().toLowerCase())) {
                 Object[] details = {
                         oi.getItemProduct().getProductName(),
                         oi.getItemProduct().getProductUnitPrice(),
@@ -929,7 +895,7 @@ public class MainGUI extends JFrame{
             }
         }
 
-        if (txtSearch_Cart.getText().isEmpty()){
+        if (txtSearch_Cart.getText().isEmpty()) {
             btnPlusOne.setEnabled(true);
             btnMinusOne.setEnabled(true);
         } else {
@@ -938,14 +904,14 @@ public class MainGUI extends JFrame{
         }
     }
 
-    private void showUpdatedCheckOutDetails(){
+    private void showUpdatedCheckOutDetails() {
         lblOidOutput.setText(((PurchasableUser) currentUser).getOrder_cart().getOrderID());
         lblGrandTotal.setText(String.format("RM %.2f", ((PurchasableUser) currentUser).getOrder_cart().calculateFinal()));
-        double itemTotal=0, packingTotal=0;
+        double itemTotal = 0, packingTotal = 0;
         for (OrderItem oi :
                 (((PurchasableUser) currentUser).getOrder_cart().getOrderItems())) {
-            itemTotal += oi.getItemProduct().getProductUnitPrice()*oi.getItemQuantity();
-            packingTotal += oi.getItemProduct().getProductPackagingCharge()*oi.getItemQuantity();
+            itemTotal += oi.getItemProduct().getProductUnitPrice() * oi.getItemQuantity();
+            packingTotal += oi.getItemProduct().getProductPackagingCharge() * oi.getItemQuantity();
         }
         lblItemTotalOutput.setText(String.format("RM %.2f", itemTotal));
         lblSurchargeOutput.setText(String.format("RM %.2f", packingTotal));
@@ -975,7 +941,7 @@ public class MainGUI extends JFrame{
     }
 
 
-    private void showUpdatedProductTable(){
+    private void showUpdatedProductTable() {
         manageProductModel.setRowCount(0);
         txtSearch_ManageProduct.setText("");
         allProducts = Product.readAllProduct();
@@ -992,18 +958,18 @@ public class MainGUI extends JFrame{
                         prod.getProductInventoryCount(),
                         prod.getProductStatus()
                 };
-                manageProductModel.insertRow(manageProductModel.getRowCount(),productList);
+                manageProductModel.insertRow(manageProductModel.getRowCount(), productList);
             }
         }
     }
 
-    private void searchCustomer(){
+    private void searchCustomer() {
         manageCustomerModel.setRowCount(0);
         for (Customer cust :
                 allCustomer) {
             if (cust.getUser_name().toLowerCase().contains(txtSearch_ManageCustomer.getText().toLowerCase())
-                && cust.getUser_status().equals("ACTIVE"))
-                {   Object[] customerList = {
+                    && cust.getUser_status().equals("ACTIVE")) {
+                Object[] customerList = {
                         cust.getUser_id(),
                         cust.getUser_password(),
                         cust.getUser_name(),
@@ -1012,18 +978,18 @@ public class MainGUI extends JFrame{
                         cust.getUser_phone_number(),
                         cust.getUser_status()
                 };
-                    manageCustomerModel.insertRow(manageCustomerModel.getRowCount(), customerList);
-                }
+                manageCustomerModel.insertRow(manageCustomerModel.getRowCount(), customerList);
             }
+        }
     }
 
-    private void searchProduct(){
+    private void searchProduct() {
         manageProductModel.setRowCount(0);
         for (Product prod :
                 allProducts) {
             if (prod.getProductName().toLowerCase().contains(txtSearch_ManageProduct.getText().toLowerCase())
-                && prod.getProductStatus().equals("ACTIVE")
-                && prod.getProductInventoryCount() > 0){
+                    && prod.getProductStatus().equals("ACTIVE")
+                    && prod.getProductInventoryCount() > 0) {
                 Object[] productList = {
                         prod.getProductID(),
                         prod.getProductName(),
@@ -1039,7 +1005,7 @@ public class MainGUI extends JFrame{
         }
     }
 
-    private void setNewCustomer(){
+    private void setNewCustomer() {
         UserFile newUser = new UserFile();
         String gender = "";
         String getPassword = txtPassword.getText();
@@ -1049,17 +1015,17 @@ public class MainGUI extends JFrame{
         maleRadioButton.setActionCommand(maleRadioButton.getText());
         femaleRadioButton.setActionCommand(femaleRadioButton.getText());
 
-        if(femaleRadioButton.isSelected()){
+        if (femaleRadioButton.isSelected()) {
             gender = "FEMALE";
-        }else{
+        } else {
             gender = "MALE";
         }
 
-        UserFile.addNewUser(getPassword,getName,gender,getEmail,getPhoneNumber,"CUSTOMER","ACTIVE");
+        UserFile.addNewUser(getPassword, getName, gender, getEmail, getPhoneNumber, "CUSTOMER", "ACTIVE");
 
     }
 
-    private void setNewProduct(){
+    private void setNewProduct() {
         ProductFile newProduct = new ProductFile();
         String getItemName = txtItemName.getText();
         String ptype = "";
@@ -1070,31 +1036,30 @@ public class MainGUI extends JFrame{
         fragileRadioButton.setActionCommand(fragileRadioButton.getText());
         nonFragileRadioButton.setActionCommand(nonFragileRadioButton.getText());
 
-        if(fragileRadioButton.isSelected()){
+        if (fragileRadioButton.isSelected()) {
             ptype = "FRAGILE";
-        }else{
+        } else {
             ptype = "NOT_FRAGILE";
 
         }
         status = "ACTIVE";
-        ProductFile.addNewProduct(getItemName,ptype,getUnitPrice,packagingCharge,getInventoryCount,status);
+        Product.addProduct(getItemName, ptype, getUnitPrice, packagingCharge, getInventoryCount, status);
     }
 
-    private void editProduct(){
+    private void editProduct() {
         int index = tblManageProduct.getSelectedRow();
-        if (index!=-1){
-            String pid = (String)tblManageProduct.getValueAt(index,0);
+        if (index != -1) {
+            String pid = (String) tblManageProduct.getValueAt(index, 0);
             for (Product prod :
                     allProducts) {
                 if (pid.equals(prod.getProductID())) {
                     prod.setProductName(txtItemName.getText());
                     prod.setProductType(
-                            fragileRadioButton.isSelected() ? "FRAGILE":
-                                    nonFragileRadioButton.isSelected() ? "NOT_FRAGILE":""
+                            fragileRadioButton.isSelected() ? "FRAGILE" :
+                                    nonFragileRadioButton.isSelected() ? "NOT_FRAGILE" : ""
                     );
                     prod.setProductUnitPrice(Double.parseDouble(txtUnitPrice.getText()));
                     prod.setInventoryCount(Integer.parseInt(txtInventoryCount.getText()));
-
 
 
                 }
@@ -1102,16 +1067,15 @@ public class MainGUI extends JFrame{
         }
 
 
-
     }
 
-    private void editCustomer(){
+    private void editCustomer() {
         int index = tblCustomer.getSelectedRow();
-        if (index != -1){
-            String uid = (String)tblCustomer.getValueAt(index,0);
-            for (Customer customer:
-                 allCustomer) {
-                if (uid.equals(customer.getUser_id())){
+        if (index != -1) {
+            String uid = (String) tblCustomer.getValueAt(index, 0);
+            for (Customer customer :
+                    allCustomer) {
+                if (uid.equals(customer.getUser_id())) {
                     customer.setUser_password(txtPassword.getText());
                     customer.setUser_name(txtName.getText());
                     customer.setUser_email(txtEmail.getText());

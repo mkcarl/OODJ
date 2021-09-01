@@ -128,10 +128,6 @@ public class OrderProductFile extends MyFile {
                 indicesOf(oid)) {
             targetPIDs.add(allPID.get(i));
         }
-//
-//        if (targetPIDs.size() == 0){
-//            throw new RecordNotFoundException("No such Order ID");
-//        }
 
         return targetPIDs;
 
@@ -207,9 +203,6 @@ public class OrderProductFile extends MyFile {
             }
         }
 
-//        if (targetIndices.size() == 0){
-//            throw new RecordNotFoundException("No such Order ID");
-//        }
         return targetIndices;
     }
 

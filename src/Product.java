@@ -3,7 +3,6 @@ import FileIO.RecordNotFoundException;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 /**
@@ -59,19 +58,6 @@ public class Product {
         }
     }
 
-    public void udpateProduct(){ // likely redudant
-        try {
-            int entryNumber = ProductFile.indexOf(this.product_id);
-            ProductFile.updateEntry(1, entryNumber, this.product_name);
-            ProductFile.updateEntry(2, entryNumber, this.product_type);
-            ProductFile.updateEntry(3, entryNumber, Double.toString(this.product_unit_price));
-            ProductFile.updateEntry(4, entryNumber, Double.toString(this.product_packaging_charge));
-            ProductFile.updateEntry(5, entryNumber, Integer.toString(this.product_inventory_count));
-            ProductFile.updateEntry(6, entryNumber, this.product_status);
-        } catch (IOException | RecordNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
 
     public static ArrayList<Product> readAllProduct(){
         ArrayList<Product> allProducts = new ArrayList<>();
@@ -95,35 +81,6 @@ public class Product {
             e.printStackTrace();
         }
         return allProducts;
-    }
-
-//    public static ArrayList<Product> filterProduct(String condition){
-//        // TODO i dont think theres a need to filter stuff here, just filter it using at the GUI
-//    }
-
-    public static ArrayList<Product> searchProduct(String mode, String keyword){
-        ArrayList<Product> allProduct = readAllProduct();
-        ArrayList<Product> searchResult = new ArrayList<>();
-        switch (mode){
-            case "id": // return only one product that correspond to the product id
-                for (Product prod :
-                        allProduct) {
-                    if (prod.product_id.equals(keyword)) {
-                        searchResult.add(prod);
-                        break;
-                    }
-                }
-                break;
-            case "name": // return all product that contain the specified keyword
-                for (Product prod :
-                        allProduct) {
-                    if (prod.product_name.contains(keyword)) {
-                        searchResult.add(prod);
-                    }
-                }
-                break;
-        }
-        return searchResult;
     }
 
     public void setInventoryCount(int quantity){

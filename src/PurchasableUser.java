@@ -53,11 +53,7 @@ public abstract class PurchasableUser extends User implements Purchasable {
         } catch (IOException e) {
             e.printStackTrace();
         } catch (RecordNotFoundException e) { // if there are no records for them
-            OrderFile.addNewOrder(
-                    new Date(),
-                    "PENDING",
-                    this.user_id
-            ); // create a new entry for them first
+            Order.addOrder(this.user_id); // create a new entry for them first
             try {
                 // basically same thing as above
                 indexOfAllOrderID = OrderFile.indicesOf(this.user_id);
@@ -309,11 +305,6 @@ public abstract class PurchasableUser extends User implements Purchasable {
         }
 
 
-    }
-
-    public double balance(double amountPaid) {
-        // likely redundant
-        return amountPaid - this.order_cart.calculateFinal();
     }
 
     public void checkOut(boolean invoice) {
