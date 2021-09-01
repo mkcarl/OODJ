@@ -1,8 +1,6 @@
 import FileIO.ProductFile;
 import FileIO.RecordNotFoundException;
 import FileIO.UserFile;
-import com.sun.imageio.plugins.jpeg.JPEGStreamMetadataFormat;
-import jdk.nashorn.internal.runtime.regexp.joni.Regex;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -11,13 +9,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.io.IOException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.Locale;
 
 /**
  * @author mkcarl
@@ -431,6 +427,10 @@ public class MainGUI extends JFrame{
                 String newPw = txtNewPassword.getText();
                 String getUID = txtUsername.getText();
                 User.resetPassword(getUID, resetCode, newPw);
+                JOptionPane.showMessageDialog(null,"Password has been reset.");
+                txtResetCode.setText("");
+                txtNewPassword.setText("");
+                cl.show(parentPanel, "loginPanel");
             }
         });
         txtSearch_ManageCustomer.addKeyListener(new KeyAdapter() {
@@ -487,7 +487,7 @@ public class MainGUI extends JFrame{
                     cl.show(parentPanel,"customerPanel");
                     showUpdatedCustomerTable();
                 }else{
-                    JOptionPane.showMessageDialog(null,"Incorrect Email Format!, Please Check and Try Again","WARNING",JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(null,"Incorrect Email Format! Please Check and Try Again","WARNING",JOptionPane.WARNING_MESSAGE);
                     txtEmail.setText("");
                 }
 
@@ -496,8 +496,6 @@ public class MainGUI extends JFrame{
         btnEdit_ManageCustomer.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                maleRadioButton.setEnabled(false);
-                femaleRadioButton.setEnabled(false);
                 int index = tblCustomer.getSelectedRow();
                 if (index!=-1){
                     txtUID.setEnabled(false);
@@ -513,16 +511,17 @@ public class MainGUI extends JFrame{
                     }else if (gender.equals("FEMALE")){
                         femaleRadioButton.doClick();
                     }
+                    maleRadioButton.setEnabled(false);
+                    femaleRadioButton.setEnabled(false);
                     String email = (String)tblCustomer.getValueAt(index,4);
                     txtEmail.setText(email);
                     String phoneNo = (String)tblCustomer.getValueAt(index,5);
                     txtPhoneNumber.setText(phoneNo);
-
-
+                    lblTitle_NewCustomer.setText("Edit Customer");
+                    cl.show(parentPanel,"newCustomerPanel");
+                } else {
+                    JOptionPane.showMessageDialog(null,"Please Select an Item","Warning",JOptionPane.WARNING_MESSAGE);
                 }
-                lblTitle_NewCustomer.setText("Edit Customer");
-                cl.show(parentPanel,"newCustomerPanel");
-
             }
         });
         btnSave_NewProduct.addActionListener(new ActionListener() {
@@ -608,10 +607,11 @@ public class MainGUI extends JFrame{
                 int index = tblManageProduct.getSelectedRow();
                 if (index != -1) {
                     String col = (String) tblManageProduct.getValueAt(index, 0);
-                    //String col = Integer.toString((Integer)tblManageProduct.getValueAt(index, 0));
                     Product.deleteProduct(col);
                     JOptionPane.showMessageDialog(null, "Product Deleted !");
                     showUpdatedProductTable();
+                }else{
+                    JOptionPane.showMessageDialog(null,"Please Select an Item","Warning",JOptionPane.WARNING_MESSAGE);
                 }
 
             }
@@ -625,6 +625,8 @@ public class MainGUI extends JFrame{
                     Customer.deleteCustomer(col);
                     JOptionPane.showMessageDialog(null,"Customer Deleted !");
                     showUpdatedCustomerTable();
+                }else{
+                    JOptionPane.showMessageDialog(null,"Please Select an Item","Warning",JOptionPane.WARNING_MESSAGE);
                 }
             }
         });
@@ -1119,7 +1121,5 @@ public class MainGUI extends JFrame{
             }
         }
     }
-
-
 
 }
