@@ -148,7 +148,6 @@ public class MainGUI extends JFrame {
             public void actionPerformed(ActionEvent actionEvent) {
                 String getUID = txtUsername.getText();
                 String getPass = String.valueOf(passPassword.getPassword());
-                System.out.println(getPass);
 
                 try {
                     if (User.isValid(getUID, getPass)) {
@@ -157,7 +156,6 @@ public class MainGUI extends JFrame {
                             if (User.isActive(getUID)) {
                                 JOptionPane.showMessageDialog(null, "Login Successful! Welcome Customer !");
                                 cl.show(parentPanel, "customerWelcomePanel");
-                                System.out.println(getUID + ", " + getPass);
                             } else {
                                 JOptionPane.showMessageDialog(null, "Inactive User! Try Again");
                             }
@@ -166,7 +164,6 @@ public class MainGUI extends JFrame {
                             if (User.isActive(getUID)) {
                                 JOptionPane.showMessageDialog(null, "Login Successful! Welcome Admin !");
                                 cl.show(parentPanel, "adminWelcomePanel");
-                                System.out.println(getUID + ", " + getPass);
                             } else {
                                 JOptionPane.showMessageDialog(null, "Inactive User! Try Again");
                             }
@@ -175,15 +172,12 @@ public class MainGUI extends JFrame {
                         passPassword.setText("");
                     } else {
                         JOptionPane.showMessageDialog(null, "Login Unsuccessful, Please Try Again!");
-                        System.out.println("Login Unsuccessful");
-                        System.out.println("Details Inputted: " + getUID + ", " + getPass);
                         txtUsername.setText("");
                         passPassword.setText("");
                     }
 
                 } catch (IOException e) {
                     e.printStackTrace();
-                    System.out.println("No Input Detected");
                     JOptionPane.showMessageDialog(null, "Input Fields are empty!, Please Enter Your Login Details and Try Again.");
                 }
             }
@@ -689,26 +683,33 @@ public class MainGUI extends JFrame {
                         }
 
                         protected void done() {
-                            try {
-                                System.out.println("Done sending email");
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
                         }
                     }
                     new EmailWorker().execute();
 
 
-                    JOptionPane.showMessageDialog(
-                            null,
-                            String.format(
-                                    "Paid RM %.2f. Copy of invoice is sent to %s",
-                                    ((PurchasableUser) currentUser).getOrder_cart().calculateFinal(),
-                                    currentUser.user_email
-                            ),
-                            "Transaction successful",
-                            JOptionPane.INFORMATION_MESSAGE
-                    );
+                    if (choice == 0){
+                        JOptionPane.showMessageDialog(
+                                null,
+                                String.format(
+                                        "Paid RM %.2f. Copy of invoice is sent to %s",
+                                        ((PurchasableUser) currentUser).getOrder_cart().calculateFinal(),
+                                        currentUser.user_email
+                                ),
+                                "Transaction successful",
+                                JOptionPane.INFORMATION_MESSAGE
+                        );
+                    } else {
+                        JOptionPane.showMessageDialog(
+                                null,
+                                String.format(
+                                        "Paid RM %.2f. Please come again",
+                                        ((PurchasableUser) currentUser).getOrder_cart().calculateFinal()
+                                ),
+                                "Transaction successful",
+                                JOptionPane.INFORMATION_MESSAGE
+                        );
+                    }
                     if (currentUser instanceof Admin) {
                         currentUser = new Admin(currentUser.user_id);
                     } else {
