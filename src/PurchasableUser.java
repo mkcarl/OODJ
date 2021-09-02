@@ -117,6 +117,7 @@ public abstract class PurchasableUser extends User implements Purchasable {
         this.order_cart = order_cart;
     }
 
+    @Override
     public void generateInvoice() {
         String directory = "./MyInvoices";
         File dir = new File(directory);
@@ -307,6 +308,7 @@ public abstract class PurchasableUser extends User implements Purchasable {
 
     }
 
+    @Override
     public void checkOut(boolean invoice) {
         this.order_cart.checkOutCart();
 

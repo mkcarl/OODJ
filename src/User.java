@@ -1,6 +1,7 @@
 import FileIO.RecordNotFoundException;
 import FileIO.UserFile;
 
+import javax.swing.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -166,7 +167,11 @@ public abstract class User {
         try{
             if(resetCode.equals("177013")){
                 UserFile.updateEntry(1,UserFile.indexOf(user_id),newPw);
+                JOptionPane.showMessageDialog(null, "Password has been reset.");
 
+
+            }else{
+                JOptionPane.showMessageDialog(null,"Reset failed, check reset code and try again");
             }
 
         } catch (IOException | RecordNotFoundException e) {

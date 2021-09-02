@@ -417,7 +417,6 @@ public class MainGUI extends JFrame {
                 String newPw = txtNewPassword.getText();
                 String getUID = txtUsername.getText();
                 User.resetPassword(getUID, resetCode, newPw);
-                JOptionPane.showMessageDialog(null, "Password has been reset.");
                 txtResetCode.setText("");
                 txtNewPassword.setText("");
                 cl.show(parentPanel, "loginPanel");
